@@ -1,4 +1,6 @@
-﻿namespace RingRacesApp
+﻿using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
+namespace RingRacesApp
 {
     partial class Form1
     {
@@ -34,7 +36,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1904, 1041);
+            ClientSize = new Size(800, 450);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;

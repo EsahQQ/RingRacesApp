@@ -5,6 +5,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using RingRaceLab;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace RingRaceApp
 {
@@ -21,6 +22,8 @@ namespace RingRaceApp
         private Car car1;
         private Car car2;
 
+        private Track track; // добавляем объект трассы
+
         // Управляющие флаги для car1 (WASD)
         private bool moveForward1, moveBackward1, turnLeft1, turnRight1;
         // Управляющие флаги для car2 (стрелки)
@@ -33,8 +36,7 @@ namespace RingRaceApp
         {
             InitializeComponent();
             Text = "2D Car Game with Two Cars";
-            Width = 800;
-            Height = 600;
+            this.WindowState = FormWindowState.Maximized;
             KeyPreview = true;  // Чтобы форма получала события клавиатуры даже при наличии дочерних элементов
 
             glControl = new GLControl(new GraphicsMode(32, 0, 0, 4))
@@ -49,11 +51,6 @@ namespace RingRaceApp
             glControl.PreviewKeyDown += GlControl_PreviewKeyDown; //чтоб работали стрелочки
             Controls.Add(glControl);
 
-            // Инициализируем первую машинку в центре, сместив её влево
-            car1 = new Car(new Vector2(glControl.Width / 2 - 100, glControl.Height / 2), Color.Red);
-            // Инициализируем вторую машинку в центре, сместив её вправо
-            car2 = new Car(new Vector2(glControl.Width / 2 + 100, glControl.Height / 2), Color.Blue);
-
             lastFrameTime = DateTime.Now;
 
             // Подписываемся на события клавиатуры для обработки управления обеими машинками
@@ -63,8 +60,20 @@ namespace RingRaceApp
 
         private void GlControl_Load(object sender, EventArgs e)
         {
-            GL.ClearColor(Color4.CornflowerBlue);
+            // Задаем цвет очистки фона (можно выбрать любой)
+            GL.ClearColor(OpenTK.Graphics.Color4.CornflowerBlue);
+
+            // Включаем альфа-смешивание
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
             SetupViewport();
+
+            // Создаем трассу (фон) — убедитесь, что "track.png" находится в выходной папке
+            track = new Track("sprites/Track.png");
+            // Инициализация игровых объектов можно перенести сюда, чтобы OpenGL контекст был активен
+            car1 = new Car(new Vector2(glControl.Width / 2 - 100, glControl.Height / 2), "sprites/Mini_truck.png");
+            car2 = new Car(new Vector2(glControl.Width / 2 + 100, glControl.Height / 2), "sprites/Police.png");
         }
 
         private void GlControl_Resize(object sender, EventArgs e)
@@ -135,18 +144,23 @@ namespace RingRaceApp
             float deltaTime = (float)(currentFrameTime - lastFrameTime).TotalSeconds;
             lastFrameTime = currentFrameTime;
 
-            // Обновляем состояние обеих машинок с учетом времени между кадрами
+            // 1. Очищаем экран
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            // 2. Отрисовываем трассу (фон) – он будет служить базовым слоем
+            track.Draw(glControl.Width, glControl.Height);
+
+            // 3. Обновляем состояние обеих машинок
             car1.Update(deltaTime, moveForward1, moveBackward1, turnLeft1, turnRight1);
             car2.Update(deltaTime, moveForward2, moveBackward2, turnLeft2, turnRight2);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            // Отрисовка обеих машинок
+            // 4. Отрисовываем машины поверх трассы
             car1.Draw();
             car2.Draw();
 
+            // 5. Обновляем буферы и продолжаем цикл отрисовки
             glControl.SwapBuffers();
-            glControl.Invalidate();  // Спровоцировать перерисовку для нового кадра
+            glControl.Invalidate();  // Повторный вызов перерисовки
         }
         private void GlControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {

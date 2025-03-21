@@ -155,6 +155,7 @@ namespace RingRaceApp
             car2.Update(deltaTime, moveForward2, moveBackward2, turnLeft2, turnRight2);
 
             // 4. Отрисовываем машины поверх трассы
+
             car1.Draw();
             car2.Draw();
 

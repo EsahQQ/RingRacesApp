@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using RingRaceLibrary;
+using RingRaceLab;
 
 namespace RingRaceApp
 {

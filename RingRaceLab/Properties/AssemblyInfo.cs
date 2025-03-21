@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанные со сборкой.
-[assembly: AssemblyTitle("RingRaceLibrary")]
+[assembly: AssemblyTitle("RingRaceLab")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RingRaceLibrary")]
+[assembly: AssemblyProduct("RingRaceLab")]
 [assembly: AssemblyCopyright("Copyright ©  2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("ff63fc10-1e2b-4142-ba16-233beda34464")]
+[assembly: Guid("42572a2b-bf4e-4b21-928f-a9a176273c77")]
 
 // Сведения о версии сборки состоят из указанных ниже четырех значений:
 //

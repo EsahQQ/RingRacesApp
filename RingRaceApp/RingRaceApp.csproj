@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1AED343A-E45F-408E-B477-0A2E135C236F}</ProjectGuid>
+    <ProjectGuid>{F33D2EF1-9ABC-430B-B89C-8FE3F8108C12}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>RingRaceApp</RootNamespace>
     <AssemblyName>RingRaceApp</AssemblyName>
@@ -34,10 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=3.3.3.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\RingRacesApp\packages\OpenTK.3.3.3\lib\net20\OpenTK.dll</HintPath>
+      <HintPath>packages\OpenTK.3.3.3\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl, Version=3.3.3.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\RingRacesApp\packages\OpenTK.GLControl.3.3.3\lib\net20\OpenTK.GLControl.dll</HintPath>
+      <HintPath>packages\OpenTK.GLControl.3.3.3\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -88,9 +88,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RingRaceLibrary\RingRaceLibrary.csproj">
-      <Project>{ff63fc10-1e2b-4142-ba16-233beda34464}</Project>
-      <Name>RingRaceLibrary</Name>
+    <ProjectReference Include="..\RingRaceLab\RingRaceLab.csproj">
+      <Project>{42572a2b-bf4e-4b21-928f-a9a176273c77}</Project>
+      <Name>RingRaceLab</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

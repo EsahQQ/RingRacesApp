@@ -3,7 +3,7 @@ using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace RingRaceLibrary
+namespace RingRaceLab
 {
     public class Car
     {

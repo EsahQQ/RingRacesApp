@@ -1,4 +1,4 @@
-﻿namespace RingRacesApp_Library
+﻿namespace RingRaceLibrary
 {
     public class Menu
     {

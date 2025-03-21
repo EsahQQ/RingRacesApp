@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingRacesApp", "RingRacesApp.csproj", "{DF429A4C-3C2D-4063-94AD-FF4C4F9A94FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingRaceApp", "..\RingRaceApp\RingRaceApp.csproj", "{1AED343A-E45F-408E-B477-0A2E135C236F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingRacesApp_Library", "..\RingRacesApp_Library\RingRacesApp_Library.csproj", "{3006B29E-BE00-4E54-B221-1EB2029C9E37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingRaceLibrary", "..\RingRaceLibrary\RingRaceLibrary.csproj", "{FF63FC10-1E2B-4142-BA16-233BEDA34464}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DF429A4C-3C2D-4063-94AD-FF4C4F9A94FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF429A4C-3C2D-4063-94AD-FF4C4F9A94FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF429A4C-3C2D-4063-94AD-FF4C4F9A94FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF429A4C-3C2D-4063-94AD-FF4C4F9A94FF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3006B29E-BE00-4E54-B221-1EB2029C9E37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3006B29E-BE00-4E54-B221-1EB2029C9E37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3006B29E-BE00-4E54-B221-1EB2029C9E37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3006B29E-BE00-4E54-B221-1EB2029C9E37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AED343A-E45F-408E-B477-0A2E135C236F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AED343A-E45F-408E-B477-0A2E135C236F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AED343A-E45F-408E-B477-0A2E135C236F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AED343A-E45F-408E-B477-0A2E135C236F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF63FC10-1E2B-4142-BA16-233BEDA34464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF63FC10-1E2B-4142-BA16-233BEDA34464}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF63FC10-1E2B-4142-BA16-233BEDA34464}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF63FC10-1E2B-4142-BA16-233BEDA34464}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

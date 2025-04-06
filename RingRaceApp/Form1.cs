@@ -23,6 +23,7 @@ namespace RingRaceApp
         private Car car2;
 
         private Track track; // добавляем объект трассы
+        private CollisionMask collisionMask; // новое поле для коллизионной карты
 
         // Управляющие флаги для car1 (WASD)
         private bool moveForward1, moveBackward1, turnLeft1, turnRight1;
@@ -32,11 +33,16 @@ namespace RingRaceApp
         // Для вычисления времени между кадрами (deltaTime)
         private DateTime lastFrameTime;
 
+
         public Form1()
         {
             InitializeComponent();
+            FormBorderStyle = FormBorderStyle.None; // отсутствие рамки
+            WindowState = FormWindowState.Maximized;
+            Width = 1920;
+            Height = 1080;
             Text = "2D Car Game with Two Cars";
-            this.WindowState = FormWindowState.Maximized;
+           
             KeyPreview = true;  // Чтобы форма получала события клавиатуры даже при наличии дочерних элементов
 
             glControl = new GLControl(new GraphicsMode(32, 0, 0, 4))
@@ -70,10 +76,12 @@ namespace RingRaceApp
             SetupViewport();
 
             // Создаем трассу (фон) — убедитесь, что "track.png" находится в выходной папке
-            track = new Track("sprites/Track.png");
+            track = new Track("D:/sprites/road3.png");
             // Инициализация игровых объектов можно перенести сюда, чтобы OpenGL контекст был активен
-            car1 = new Car(new Vector2(glControl.Width / 2 - 100, glControl.Height / 2), "sprites/Mini_truck.png");
-            car2 = new Car(new Vector2(glControl.Width / 2 + 100, glControl.Height / 2), "sprites/Police.png");
+            car1 = new Car(new Vector2(glControl.ClientSize.Width / 2, glControl.ClientSize.Height / 4), "D:/sprites/car1.png");
+            car2 = new Car(new Vector2(glControl.ClientSize.Width / 2, glControl.ClientSize.Height / 4 - 64), "D:/sprites/car1.png");
+            // Загружаем коллизионную карту (она должна соответствовать дорожной текстуре)
+            collisionMask = new CollisionMask("D:/sprites/road3_map.png");
         }
 
         private void GlControl_Resize(object sender, EventArgs e)
@@ -83,11 +91,11 @@ namespace RingRaceApp
 
         private void SetupViewport()
         {
-            GL.Viewport(0, 0, glControl.Width, glControl.Height);
+            GL.Viewport(0, 0, glControl.ClientSize.Width, glControl.ClientSize.Height);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
             // Ортографическая проекция для 2D: (0,0) в левом верхнем углу
-            GL.Ortho(0, glControl.Width, glControl.Height, 0, -1, 1);
+            GL.Ortho(0, glControl.ClientSize.Width, glControl.ClientSize.Height, 0, -1, 1);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
         }
@@ -148,11 +156,30 @@ namespace RingRaceApp
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             // 2. Отрисовываем трассу (фон) – он будет служить базовым слоем
-            track.Draw(glControl.Width, glControl.Height);
+            track.Draw(glControl.ClientSize.Width, glControl.ClientSize.Height);
+
+            // Сохраняем старые позиции машин
+            Vector2 oldPos1 = car1.Position;
+            Vector2 oldPos2 = car2.Position;
 
             // 3. Обновляем состояние обеих машинок
             car1.Update(deltaTime, moveForward1, moveBackward1, turnLeft1, turnRight1);
             car2.Update(deltaTime, moveForward2, moveBackward2, turnLeft2, turnRight2);
+
+            // Проверяем коллизию для машин.
+            // Предположим, что координаты машины совпадают с координатами в коллизионной карте
+            // (это работает, если дорожная текстура и коллизионная карта имеют одинаковые размеры и вы используете ту же ортографию).
+            if (!collisionMask.IsDrivable((int)car1.Position.X, (int)car1.Position.Y))
+            {
+                // Если столкновение, откатываем машину к предыдущей позиции
+                car1.Position = oldPos1;
+                car1.CurrentSpeed = -car1.CurrentSpeed * 0.4f; // сбрасываем накопленную скорость
+            }
+            if (!collisionMask.IsDrivable((int)car2.Position.X, (int)car2.Position.Y))
+            {
+                car2.Position = oldPos2;
+                car2.CurrentSpeed = -car2.CurrentSpeed * 0.4f;
+            }
 
             // 4. Отрисовываем машины поверх трассы
 

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 
 public class Track
@@ -21,31 +22,19 @@ public class Track
         int id;
         using (Bitmap bitmap = new Bitmap(path))
         {
-            // Преобразуем изображение в формат 24bppRgb (без альфа-канала)
-            Bitmap bmp24 = new Bitmap(bitmap.Width, bitmap.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            using (Graphics g = Graphics.FromImage(bmp24))
-            {
-                g.DrawImage(bitmap, 0, 0, bitmap.Width, bitmap.Height);
-            }
-
-            // Генерируем текстуру OpenGL
             GL.GenTextures(1, out id);
             GL.BindTexture(TextureTarget.Texture2D, id);
 
-            // Устанавливаем выравнивание пикселей
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
 
-            // Устанавливаем параметры фильтрации (линейная фильтрация)
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
-            // Блокируем bmp24 для чтения пиксельных данных
-            BitmapData data = bmp24.LockBits(
-                new Rectangle(0, 0, bmp24.Width, bmp24.Height),
+            BitmapData data = bitmap.LockBits(
+                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                 ImageLockMode.ReadOnly,
                 System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
-            // Создаем текстуру: используем Rgb8 для внутреннего формата и Bgr для исходного формата
             GL.TexImage2D(TextureTarget.Texture2D,
                           0,
                           PixelInternalFormat.Rgb8,
@@ -56,8 +45,7 @@ public class Track
                           PixelType.UnsignedByte,
                           data.Scan0);
 
-            bmp24.UnlockBits(data);
-            bmp24.Dispose();
+            bitmap.UnlockBits(data);
         }
         return id;
     }
@@ -72,11 +60,11 @@ public class Track
         GL.BindTexture(TextureTarget.Texture2D, textureId);
 
         GL.Begin(PrimitiveType.Quads);
-        // Предполагается, что в ортографической проекции (0,0) – верхний левый угол
-        GL.TexCoord2(0, 1); GL.Vertex2(0, 0);
-        GL.TexCoord2(1, 1); GL.Vertex2(width, 0);
-        GL.TexCoord2(1, 0); GL.Vertex2(width, height);
-        GL.TexCoord2(0, 0); GL.Vertex2(0, height);
+        // Теперь (0,0) вершины будет соответствовать (0,0) текстуры, а (0, height) — (0,1) текстуры.
+        GL.TexCoord2(0, 0); GL.Vertex2(0, 0);
+        GL.TexCoord2(1, 0); GL.Vertex2(width, 0);
+        GL.TexCoord2(1, 1); GL.Vertex2(width, height);
+        GL.TexCoord2(0, 1); GL.Vertex2(0, height);
         GL.End();
 
         GL.Disable(EnableCap.Texture2D);

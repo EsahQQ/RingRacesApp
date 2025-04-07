@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -33,6 +34,22 @@ namespace RingRaceLab
             Color pixel = collisionBitmap.GetPixel(x, y);
             // Простая проверка: если RGB значения выше порога, то область проходимая.
             return pixel.R < 100 && pixel.G < 100 && pixel.B < 100;
+        }
+
+        // Метод для проверки коллизии автомобиля по его углам (corners)
+        public bool CheckCollision(Car car)
+        {
+            List<Vector2> corners = car.GetCorners();
+
+            foreach (var corner in corners)
+            {
+                int checkX = (int)corner.X;
+                int checkY = (int)corner.Y;
+
+                if (!IsDrivable(checkX, checkY))
+                    return true;
+            }
+            return false;
         }
     }
 }

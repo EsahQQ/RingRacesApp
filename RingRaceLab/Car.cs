@@ -8,123 +8,51 @@ using OpenTK.Graphics.OpenGL;
 
 namespace RingRaceLab
 {
-    public class Car
+    public class Car : GameEntity
     {
-        // Положение и угол машины
-        public Vector2 Position { get; set; }
-        public float Angle { get; set; }
 
-        // Параметры для движения вперёд:
-        public float ForwardAcceleration { get; set; }  // Ускорение при движении вперёд (положительное)
-        public float ForwardMaxSpeed { get; set; }       // Максимальная скорость вперёд
-
-        // Параметры для движения назад:
-        public float ReverseAcceleration { get; set; }   // Ускорение при движении назад (увеличивает отрицательную скорость)
-        public float ReverseMaxSpeed { get; set; }        // Максимальная скорость назад (по модулю)
-
-        // Общая скорость замедления при отсутствии ввода (торможение)
-        public float Deceleration { get; set; }
-
-        // Скорость поворота (в градусах в секунду)
-        public float TurnSpeed { get; set; }
-
-        // Текущая скорость машины (может быть отрицательной для заднего хода)
-        public float CurrentSpeed { get; set; }
-
-        private int textureId;
-        public Color CarColor { get; set; } // Если нужно задавать цвет, здесь можно использовать
+        public Vector2 Position { get; set; } // Положение
+        public float Angle { get; set; } // Угол машины
+        public float ForwardAcceleration { get; set; } // Ускорение при движении вперёд (положительное)
+        public float ForwardMaxSpeed { get; set; } // Максимальная скорость вперёд
+        public float ReverseAcceleration { get; set; } // Ускорение при движении назад (увеличивает отрицательную скорость)
+        public float ReverseMaxSpeed { get; set; } // Максимальная скорость назад (по модулю)
+        public float Deceleration { get; set; } // Общая скорость замедления при отсутствии ввода (торможение)
+        public float TurnSpeed { get; set; } // Скорость поворота (в градусах в секунду)
+        public float CurrentSpeed { get; set; } // Текущая скорость машины (может быть отрицательной для заднего хода)
+        private int textureId; // Id текстуры
 
         public Car(Vector2 startPosition, string texturePath)
         {
             Position = startPosition;
             Angle = 0f;
-
-            // Инициализация параметров для движения вперёд
-            ForwardAcceleration = 150f;  // Машина быстрее разгоняется вперёд
-            ForwardMaxSpeed = 350f;        // Максимальная скорость вперёд
-
-            // Инициализация параметров для движения назад
-            ReverseAcceleration = 120f;    // Задний ход может разгоняться медленнее
-            ReverseMaxSpeed = 200f;        // Максимальная скорость заднего хода (по модулю)
-
-            // Замедление (торможение) при отпускании клавиш
-            Deceleration = 75f;
-
-            // Скорость поворота (поворот на 180 градусов в секунду)
-            TurnSpeed = 180f;
-
-            // Изначально машина неподвижна
-            CurrentSpeed = 0f;
-
-            // Загружаем текстуру машины
-            textureId = LoadTexture(texturePath);
+            ForwardAcceleration = 150f; // Машина быстрее разгоняется вперёд
+            ForwardMaxSpeed = 350f; // Максимальная скорость вперёд
+            ReverseAcceleration = 120f; // Задний ход может разгоняться медленнее
+            ReverseMaxSpeed = 200f; // Максимальная скорость заднего хода (по модулю)
+            Deceleration = 75f; // Замедление (торможение) при отпускании клавиш
+            TurnSpeed = 180f; // Скорость поворота (поворот на 180 градусов в секунду)
+            CurrentSpeed = 0f; // Изначально машина неподвижна
+            textureId = TextureLoader.LoadFromFile(texturePath); // Загружаем текстуру машины
         }
 
-        private int LoadTexture(string path)
-        {
-            try
-            {
-                int id;
-                using (Bitmap bitmap = new Bitmap(path))
-                {
-                    GL.GenTextures(1, out id);
-                    GL.BindTexture(TextureTarget.Texture2D, id);
 
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-                    BitmapData data = bitmap.LockBits(
-                        new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                        ImageLockMode.ReadOnly,
-                        System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                    GL.TexImage2D(TextureTarget.Texture2D,
-                        0,
-                        PixelInternalFormat.Rgba,
-                        data.Width,
-                        data.Height,
-                        0,
-                        OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
-                        PixelType.UnsignedByte,
-                        data.Scan0);
-
-                    bitmap.UnlockBits(data);
-                }
-                return id;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка загрузки текстуры: " + ex.Message);
-                throw; // Если ошибка, выбрасываем исключение
-            }
-        }
-
-        /// <summary>
-        /// Метод Update осуществляет обновление состояния машины.
-        /// Здесь задается логика ускорения для движения вперёд и заднего хода с разными параметрами,
-        /// а также плавное торможение по умолчанию. Поворот осуществляется с помощью TurnSpeed.
-        /// </summary>
         public void Update(float deltaTime, bool moveForward, bool moveBackward, bool turnLeft, bool turnRight)
         {
-
-            // Обработка ускорения и ускорения назад:
-            if (moveForward && !moveBackward)
+            if (moveForward && !moveBackward) // Если нажата клавиша для движения вперед, увеличиваем CurrentSpeed
             {
-                // Если нажата клавиша для движения вперед, увеличиваем CurrentSpeed
                 CurrentSpeed += ForwardAcceleration * deltaTime;
                 if (CurrentSpeed > ForwardMaxSpeed)
                     CurrentSpeed = ForwardMaxSpeed;
             }
-            else if (moveBackward && !moveForward)
+            else if (moveBackward && !moveForward) // Если нажата клавиша для движения назад, уменьшаем CurrentSpeed (делая его отрицательным)
             {
-                // Если нажата клавиша для движения назад, уменьшаем CurrentSpeed (делая его отрицательным)
                 CurrentSpeed -= ReverseAcceleration * deltaTime;
                 if (CurrentSpeed < -ReverseMaxSpeed)
                     CurrentSpeed = -ReverseMaxSpeed;
             }
-            else
+            else // Если ни одна команда не нажата, применяем замедление по направлению к 0
             {
-                // Если ни одна команда не нажата, применяем замедление по направлению к 0
                 if (CurrentSpeed > 0)
                 {
                     CurrentSpeed -= Deceleration * deltaTime;
@@ -138,9 +66,7 @@ namespace RingRaceLab
                         CurrentSpeed = 0;
                 }
             }
-
-            // Порог, ниже которого поворот не выполняется (например, 0.1f или любая другая подходящая величина)
-            float turningThreshold = 0.1f;
+            float turningThreshold = 0.1f; // Порог, ниже которого поворот не выполняется (например, 0.1f или любая другая подходящая величина)
             // -------------------------
             // Здесь вычислим коэффициент поворота:
             // Чем быстрее скорость (по модулю), тем меньше поворот.
@@ -170,11 +96,7 @@ namespace RingRaceLab
             Position += direction * CurrentSpeed * deltaTime;
         }
 
-        /// <summary>
-        /// Метод Draw отрисовывает машину с использованием текстурированного прямоугольника фиксированного размера.
-        /// Здесь размер машины задается фиксированно (50x25 пикселей для базового разрешения).
-        /// </summary>
-        public void Draw()
+        public override void Draw()
         {
             float width = 32f;
             float height = 16f;

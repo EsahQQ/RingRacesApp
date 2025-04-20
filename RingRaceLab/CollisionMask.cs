@@ -11,33 +11,22 @@ namespace RingRaceLab
     public class CollisionMask
     {
         public Bitmap collisionBitmap;
-
-        public int Width => collisionBitmap.Width;
-        public int Height => collisionBitmap.Height;
-
-        // Загрузить коллизионную карту по указанному пути
-        public CollisionMask(string path)
+        public CollisionMask(string path) // Загрузить коллизионную карту по указанному пути
         {
             if (!System.IO.File.Exists(path))
                 throw new Exception("Файл коллизионной карты не найден: " + path);
             collisionBitmap = new Bitmap(path);
         }
-
-        // Проверяет, можно ли ехать в точке (x,y).
-        // Здесь считаем, что если пиксель «яркий» (например, значение R > 200), то это проходимая область.
-        public bool IsDrivable(int x, int y)
+        
+        public bool IsDrivable(int x, int y) // Проверяет, можно ли ехать в точке (x,y).
         {
-            // Если вышли за пределы изображения – считаем область недопустимой
-            if (x < 0 || y < 0 || x >= collisionBitmap.Width || y >= collisionBitmap.Height)
+            if (x < 0 || y < 0 || x >= collisionBitmap.Width || y >= collisionBitmap.Height) // Если вышли за пределы изображения – считаем область недопустимой
                 return false;
-
             Color pixel = collisionBitmap.GetPixel(x, y);
-            // Простая проверка: если RGB значения выше порога, то область проходимая.
-            return pixel.R < 100 && pixel.G < 100 && pixel.B < 100;
+            return pixel.R < 100 && pixel.G < 100 && pixel.B < 100; // Здесь считаем, что если пиксель «яркий» (например, значение R > 200), то это проходимая область.
         }
 
-        // Метод для проверки коллизии автомобиля по его углам (corners)
-        public bool CheckCollision(Car car)
+        public bool CheckCollision(Car car) // Метод для проверки коллизии автомобиля по его углам (corners)
         {
             List<Vector2> corners = car.GetCorners();
 

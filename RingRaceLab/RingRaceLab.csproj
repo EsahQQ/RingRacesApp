@@ -56,7 +56,6 @@
     <Compile Include="CarPhysics.cs" />
     <Compile Include="CarRenderer.cs" />
     <Compile Include="CollisionMask.cs" />
-    <Compile Include="CollisionSystem.cs" />
     <Compile Include="GameEntity.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="InputHandler.cs" />

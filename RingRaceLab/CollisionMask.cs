@@ -10,35 +10,34 @@ namespace RingRaceLab
 {
     public class CollisionMask
     {
-        public Bitmap collisionBitmap;
-        public CollisionMask(string path) // Загрузить коллизионную карту по указанному пути
+        private readonly Bitmap _collisionBitmap;
+
+        public CollisionMask(string path)
         {
             if (!System.IO.File.Exists(path))
                 throw new Exception("Файл коллизионной карты не найден: " + path);
-            collisionBitmap = new Bitmap(path);
-        }
-        
-        public bool IsDrivable(int x, int y) // Проверяет, можно ли ехать в точке (x,y).
-        {
-            if (x < 0 || y < 0 || x >= collisionBitmap.Width || y >= collisionBitmap.Height) // Если вышли за пределы изображения – считаем область недопустимой
-                return false;
-            Color pixel = collisionBitmap.GetPixel(x, y);
-            return pixel.R < 100 && pixel.G < 100 && pixel.B < 100; // Здесь считаем, что если пиксель «яркий» (например, значение R > 200), то это проходимая область.
+            _collisionBitmap = new Bitmap(path);
         }
 
-        public bool CheckCollision(Car car) // Метод для проверки коллизии автомобиля по его углам (corners)
+        public bool CheckCollision(Car car)
         {
             List<Vector2> corners = car.GetCorners();
-
             foreach (var corner in corners)
             {
-                int checkX = (int)corner.X;
-                int checkY = (int)corner.Y;
-
-                if (!IsDrivable(checkX, checkY))
+                int x = (int)corner.X;
+                int y = (int)corner.Y;
+                if (!IsDrivable(x, y))
                     return true;
             }
             return false;
+        }
+
+        private bool IsDrivable(int x, int y)
+        {
+            if (x < 0 || y < 0 || x >= _collisionBitmap.Width || y >= _collisionBitmap.Height)
+                return false;
+            Color pixel = _collisionBitmap.GetPixel(x, y);
+            return pixel.R < 100 && pixel.G < 100 && pixel.B < 100;
         }
     }
 }

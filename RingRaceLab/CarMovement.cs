@@ -5,9 +5,9 @@ namespace RingRaceLab
 {
     public class CarMovement
     {
-        public Vector2 Position { get; private set; }
-        public float Angle { get; private set; }
-        public float CurrentSpeed { get; private set; }
+        public Vector2 Position { get; set; }
+        public float Angle { get;  set; }
+        public float CurrentSpeed { get; set; }
 
         private readonly CarConfig _config;
 

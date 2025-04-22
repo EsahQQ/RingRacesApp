@@ -20,11 +20,6 @@ namespace RingRaceApp
         private Button btnExitToMenu;
         // Элемент GLControl добавляется в panelGame
         private GLControl glControl;
-        // Игровые объекты: машины, трасса, коллизионная карта.
-        private Car car1;
-        private Car car2;
-        private Track track;
-        private CollisionMask collisionMask;
         // Для вычисления deltaTime
         private DateTime lastFrameTime;
         private InputHandler _inputHandler = new InputHandler();
@@ -56,8 +51,7 @@ namespace RingRaceApp
                 Dock = DockStyle.Fill,
                 BackColor = Color.LightBlue
             };
-
-            Button btnStart = new Button();
+            btnStart = new Button();
             btnStart.FlatStyle = FlatStyle.Flat;
             btnStart.FlatAppearance.BorderSize = 0;
             btnStart.BackgroundImageLayout = ImageLayout.Stretch;

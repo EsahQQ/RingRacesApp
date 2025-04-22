@@ -51,6 +51,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Car.cs" />
+    <Compile Include="CarConfig.cs" />
+    <Compile Include="CarMovement.cs" />
+    <Compile Include="CarPhysics.cs" />
+    <Compile Include="CarRenderer.cs" />
     <Compile Include="CollisionMask.cs" />
     <Compile Include="CollisionSystem.cs" />
     <Compile Include="GameEntity.cs" />

@@ -24,6 +24,7 @@ namespace RingRaceApp
         private DateTime lastFrameTime;
         private InputHandler _inputHandler = new InputHandler();
         private GameManager _gameManager;
+
         public Form1()
         {
             InitializeComponent();
@@ -40,8 +41,13 @@ namespace RingRaceApp
 
             // По умолчанию показываем меню
             ShowMenu();
-
             lastFrameTime = DateTime.Now;
+        }
+
+        private void EndGame(Car finishedCar)
+        {
+            MessageBox.Show($"Игрок победил!");
+            ShowMenu();
         }
 
         private void SetupMenuPanel()
@@ -125,18 +131,36 @@ namespace RingRaceApp
             panelMenu.Hide();
             panelGame.Show();
             glControl.Focus();
+
+            // Создаем новый GameManager при каждом запуске игры
+            Vector2[] spawnPositions = new Vector2[]
+            {
+                new Vector2(895, 1080 / 4 - 100), // Позиция для первого автомобиля
+                new Vector2(895, 1080 / 4 - 200)  // Позиция для второго автомобиля
+            };
+            _gameManager = new GameManager(
+                "sprites/road2.png",
+                "sprites/road2_map.png",
+                spawnPositions
+            );
+            _gameManager.OnCarFinished += EndGame;
+
+            glControl.Invalidate();
         }
 
         private void BtnStart_Click(object sender, EventArgs e)
         {
             // При старте игры переключаемся на панель игры
             ShowGame();
-            glControl.Invalidate();
         }
 
         private void BtnExitToMenu_Click(object sender, EventArgs e)
         {
-            // При выходе из игры останавливаем игровой цикл (если требуется)
+            // Отписываемся от события при выходе в меню
+            if (_gameManager != null)
+            {
+                _gameManager.OnCarFinished -= EndGame;
+            }
             ShowMenu();
         }
 
@@ -146,18 +170,7 @@ namespace RingRaceApp
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             SetupViewport();
-
-            // Загружаем трассу
-            Vector2[] spawnPositions = new Vector2[]
-            {
-                new Vector2(1920 / 2, 1080 / 4 - 100),         // Позиция для первого автомобиля
-                new Vector2(1920 / 2, 1080 / 4 - 200)       // Позиция для второго автомобиля
-            };
-            _gameManager = new GameManager(
-                "sprites/road2.png",
-                "sprites/road2_map.png",
-                spawnPositions
-            );
+            // GameManager теперь создается в ShowGame, а не здесь
         }
 
         private void GlControl_Resize(object sender, EventArgs e)

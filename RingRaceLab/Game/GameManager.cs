@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace RingRaceLab
 {
@@ -13,7 +14,9 @@ namespace RingRaceLab
         private readonly CollisionMask _collisionSystem;
         private readonly InputHandler _inputHandler = new InputHandler();
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        public event Action OnGameFinished;
+        private Dictionary<Car, bool> _crossedFinish = new Dictionary<Car, bool>();
+        public delegate void CarFinishedHandler(Car finishedCar);
+        public event CarFinishedHandler OnCarFinished;
         public Track Track { get; private set; }
         public Car Car1 { get; private set; }
         public Car Car2 { get; private set; }
@@ -23,15 +26,15 @@ namespace RingRaceLab
             _stopwatch.Start();
             if (spawnPositions == null || spawnPositions.Length < 2)
                 throw new ArgumentException("Необходимо задать хотя бы две стартовые позиции.", nameof(spawnPositions));
-
-            Track = new Track(trackTexture, spawnPositions);
+            Vector2 finishStart = new Vector2(928, 10);
+            Vector2 finishEnd = new Vector2(928, 269);
+            Track = new Track(trackTexture, spawnPositions, finishStart, finishEnd);
             CarConfig config1 = new CarConfig(); // Можно настроить параметры по умолчанию или передать специфичные
-            CarConfig config2 = new CarConfig(); // Аналогично для второго автомобиля
+            CarConfig config2 = new CarConfig(); 
             Car1 = new Car(spawnPositions[0], "sprites/car2.png", config1);
             Car2 = new Car(spawnPositions[1], "sprites/car1.png", config2);
 
             _collisionSystem = new CollisionMask(collisionMap);
-
             _entities.Add(Track);
             _entities.Add(Car1);
             _entities.Add(Car2);
@@ -53,10 +56,25 @@ namespace RingRaceLab
 
         private void UpdateCar(Car car, float deltaTime, (bool forward, bool backward, bool left, bool right) input)
         {
-            Vector2 oldPos = car._movement.Position; // Предполагается, что Position доступно через геттер
-            float oldAngle = car._movement.Angle;    // Аналогично для Angle
+            Vector2 oldPos = car._movement.Position; 
+            float oldAngle = car._movement.Angle;    
 
             car.Update(deltaTime, input.forward, input.backward, input.left, input.right);
+
+            // Проверка пересечения финиша
+            if (Track.FinishLine.CheckCrossing(oldPos, car._movement.Position))
+            {
+                if (!_crossedFinish[car])
+                {
+                    _crossedFinish[car] = true;
+                    // Триггерим событие финиша
+                    OnCarFinished?.Invoke(car);
+                }
+            }
+            else
+            {
+                _crossedFinish[car] = false;
+            }
 
             if (_collisionSystem.CheckCollision(car))
             {
@@ -73,6 +91,15 @@ namespace RingRaceLab
             {
                 entity.Draw();
             }
+        }
+        public void Reset(Vector2[] spawnPositions)
+        {
+            // Переинициализируем машины
+            Car1 = new Car(spawnPositions[0], "sprites/car2.png", new CarConfig());
+            Car2 = new Car(spawnPositions[1], "sprites/car1.png", new CarConfig());
+
+            // Сбросим внутреннее состояние
+            _stopwatch.Restart();
         }
     }
 }

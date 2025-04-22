@@ -8,6 +8,7 @@ namespace RingRaceLab
         internal CarMovement _movement;
         internal CarRenderer _renderer;
         internal CarPhysics _physics;
+        public int lapsComplete = -1;
 
         public Car(Vector2 startPosition, string texturePath, CarConfig config)
         {

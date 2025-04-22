@@ -8,15 +8,17 @@ using RingRaceLab;
 
 public class Track : GameEntity
 {
+    public FinishLine FinishLine { get; private set; }
     private int textureId;
     public Vector2[] SpawnPositions { get; private set; }
-    public Track(string texturePath, Vector2[] spawnPositions)
+    public Track(string texturePath, Vector2[] spawnPositions, Vector2 finishStart, Vector2 finishEnd)
     {
         if (spawnPositions == null || spawnPositions.Length == 0)
             throw new ArgumentException("Необходимо задать хотя бы одну стартовую позицию.", nameof(spawnPositions));
 
         SpawnPositions = spawnPositions;
         textureId = TextureLoader.LoadFromFile(texturePath);
+        FinishLine = new FinishLine(finishStart, finishEnd);
     }
     public override void Draw()
     {

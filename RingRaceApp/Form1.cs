@@ -48,8 +48,8 @@ namespace RingRaceApp
         };
         private List<string> trackKeys;
         private int currentTrackIndex = 0;
-        private List<string> player1Cars = new List<string> { "sprites/car1.png", "sprites/car2_menu.png" };
-        private List<string> player2Cars = new List<string> { "sprites/car1.png", "sprites/car2_menu.png" };
+        private List<string> player1Cars = new List<string> { "sprites/car1_blue_menu.png", "sprites/car2_blue_menu.png" };
+        private List<string> player2Cars = new List<string> { "sprites/car1_red_menu.png"};
         private int player1CarIndex = 0;
         private int player2CarIndex = 0;
         private GLControl glControl;

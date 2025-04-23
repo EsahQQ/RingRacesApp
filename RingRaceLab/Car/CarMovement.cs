@@ -22,13 +22,29 @@ namespace RingRaceLab
             // Переносим всю логику движения из старого класса Car
             if (moveForward && !moveBackward)
             {
-                CurrentSpeed += _config.ForwardAcceleration * deltaTime;
-                CurrentSpeed = Math.Min(CurrentSpeed, _config.ForwardMaxSpeed);
+                if (CurrentSpeed > 0)
+                {
+                    CurrentSpeed += _config.ForwardAcceleration * deltaTime;
+                    CurrentSpeed = Math.Min(CurrentSpeed, _config.ForwardMaxSpeed);
+                }
+                else
+                {
+                    CurrentSpeed += _config.ForwardAcceleration * deltaTime * 2;
+                    CurrentSpeed = Math.Min(CurrentSpeed, _config.ForwardMaxSpeed);
+                }
             }
             else if (moveBackward && !moveForward)
             {
-                CurrentSpeed -= _config.ReverseAcceleration * deltaTime;
-                CurrentSpeed = Math.Max(CurrentSpeed, -_config.ReverseMaxSpeed);
+                if (CurrentSpeed < 0)
+                {
+                    CurrentSpeed -= _config.ReverseAcceleration * deltaTime;
+                    CurrentSpeed = Math.Max(CurrentSpeed, -_config.ReverseMaxSpeed);
+                }
+                else
+                {
+                    CurrentSpeed -= _config.ReverseAcceleration * deltaTime * 3;
+                    CurrentSpeed = Math.Max(CurrentSpeed, -_config.ReverseMaxSpeed);
+                }
             }
             else
             {

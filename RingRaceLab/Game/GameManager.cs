@@ -21,18 +21,16 @@ namespace RingRaceLab
         public Car Car1 { get; private set; }
         public Car Car2 { get; private set; }
 
-        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions)
+        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture)
         {
             _stopwatch.Start();
             if (spawnPositions == null || spawnPositions.Length < 2)
                 throw new ArgumentException("Необходимо задать хотя бы две стартовые позиции.", nameof(spawnPositions));
-            Vector2 finishStart = new Vector2(928, 10);
-            Vector2 finishEnd = new Vector2(928, 269);
-            Track = new Track(trackTexture, spawnPositions, finishStart, finishEnd);
+            Track = new Track(trackTexture, spawnPositions, finishPosition[0], finishPosition[1]);
             CarConfig config1 = new CarConfig(); // Можно настроить параметры по умолчанию или передать специфичные
             CarConfig config2 = new CarConfig(); 
-            Car1 = new Car(spawnPositions[0], "sprites/car2.png", config1);
-            Car2 = new Car(spawnPositions[1], "sprites/car1.png", config2);
+            Car1 = new Car(spawnPositions[0], player1CarTexture, config1);
+            Car2 = new Car(spawnPositions[1], player2CarTexture, config2);
             _lapsPassed.Add(Car1, -1);
             _lapsPassed.Add(Car2, -1);
             _collisionSystem = new CollisionMask(collisionMap);

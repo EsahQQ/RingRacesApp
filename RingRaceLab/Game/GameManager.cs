@@ -14,9 +14,9 @@ namespace RingRaceLab
         private readonly CollisionMask _collisionSystem;
         private readonly InputHandler _inputHandler = new InputHandler();
         private readonly Stopwatch _stopwatch = new Stopwatch();
-        private Dictionary<Car, bool> _crossedFinish = new Dictionary<Car, bool>();
         public delegate void CarFinishedHandler(Car finishedCar);
         public event CarFinishedHandler OnCarFinished;
+        private Dictionary<Car, int> _lapsPassed = new Dictionary<Car, int>();
         public Track Track { get; private set; }
         public Car Car1 { get; private set; }
         public Car Car2 { get; private set; }
@@ -33,7 +33,8 @@ namespace RingRaceLab
             CarConfig config2 = new CarConfig(); 
             Car1 = new Car(spawnPositions[0], "sprites/car2.png", config1);
             Car2 = new Car(spawnPositions[1], "sprites/car1.png", config2);
-
+            _lapsPassed.Add(Car1, -1);
+            _lapsPassed.Add(Car2, -1);
             _collisionSystem = new CollisionMask(collisionMap);
             _entities.Add(Track);
             _entities.Add(Car1);
@@ -64,16 +65,12 @@ namespace RingRaceLab
             // Проверка пересечения финиша
             if (Track.FinishLine.CheckCrossing(oldPos, car._movement.Position))
             {
-                if (!_crossedFinish[car])
+                _lapsPassed[car]++;
+                // Триггерим событие финиша
+                if (_lapsPassed[car] == 5)
                 {
-                    _crossedFinish[car] = true;
-                    // Триггерим событие финиша
                     OnCarFinished?.Invoke(car);
                 }
-            }
-            else
-            {
-                _crossedFinish[car] = false;
             }
 
             if (_collisionSystem.CheckCollision(car))

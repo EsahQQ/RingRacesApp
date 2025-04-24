@@ -7,11 +7,10 @@ using System.Windows.Forms;
 
 namespace RingRaceLab
 {
-    public class DoubleBufferedPanel : Panel
+    public interface IGameController
     {
-        public DoubleBufferedPanel()
-        {
-            this.DoubleBuffered = true;
-        }
+        Panel GamePanel { get; }
+        void StartGame(string track, string player1Car, string player2Car);
+        void HideGame();
     }
 }

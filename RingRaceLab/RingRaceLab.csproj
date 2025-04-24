@@ -55,6 +55,9 @@
     <Compile Include="Car\CarMovement.cs" />
     <Compile Include="Car\CarPhysics.cs" />
     <Compile Include="Car\CarRenderer.cs" />
+    <Compile Include="DoubleBufferedPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Track\CollisionMask.cs" />
     <Compile Include="Track\FinishLine.cs" />
     <Compile Include="Game\GameEntity.cs" />

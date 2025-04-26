@@ -52,15 +52,23 @@
   <ItemGroup>
     <Compile Include="Car\Car.cs" />
     <Compile Include="Car\CarConfig.cs" />
+    <Compile Include="Car\CarDecorator.cs" />
     <Compile Include="Car\CarMovement.cs" />
     <Compile Include="Car\CarPhysics.cs" />
     <Compile Include="Car\CarRenderer.cs" />
+    <Compile Include="Prize\FuelPrize.cs" />
+    <Compile Include="Prize\IPrize.cs" />
     <Compile Include="Menu\GameConstants.cs" />
     <Compile Include="Menu\GameController.cs" />
     <Compile Include="Menu\IGameController.cs" />
     <Compile Include="Menu\IMenuController.cs" />
     <Compile Include="Menu\MenuBuilder.cs" />
     <Compile Include="Menu\MenuController.cs" />
+    <Compile Include="Prize\PrizeFactory.cs" />
+    <Compile Include="Prize\SlowDownDecorator.cs" />
+    <Compile Include="Prize\SlowDownPrize.cs" />
+    <Compile Include="Prize\SpeedBoostDecorator.cs" />
+    <Compile Include="Prize\SpeedBoostPrize.cs" />
     <Compile Include="Track\CollisionMask.cs" />
     <Compile Include="Track\FinishLine.cs" />
     <Compile Include="Game\GameEntity.cs" />

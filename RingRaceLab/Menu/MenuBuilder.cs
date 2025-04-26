@@ -63,6 +63,21 @@ namespace RingRaceLab
             outer.Controls.Add(BuildPlayerPanel(true), 0, 0);
             outer.Controls.Add(BuildCenterPanel(), 1, 0);
             outer.Controls.Add(BuildPlayerPanel(false), 2, 0);
+            // Добавляем кнопку выхода
+            var exitButton = new Button
+            {
+                Size = new Size(144, 144),
+                BackgroundImage = Image.FromFile("sprites/close.png"),
+                BackgroundImageLayout = ImageLayout.Stretch,
+                Anchor = AnchorStyles.Right | AnchorStyles.Top,
+                FlatStyle = FlatStyle.Flat
+            };
+            StyleButton(exitButton);
+            exitButton.Click += (s, e) => Application.Exit();
+
+            // Добавляем кнопку на панель и выводим поверх остальных элементов
+            _menuPanel.Controls.Add(exitButton);
+            exitButton.BringToFront();
         }
 
         private TableLayoutPanel BuildPlayerPanel(bool isPlayer1)
@@ -219,6 +234,8 @@ namespace RingRaceLab
 
             return tl;
         }
+        
+        // Отсутствие мерцания
         public static void SetDoubleBuffered(Control c)
         {
             if (SystemInformation.TerminalServerSession) return;

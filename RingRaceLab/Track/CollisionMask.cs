@@ -11,12 +11,16 @@ namespace RingRaceLab
     public class CollisionMask
     {
         private readonly Bitmap _collisionBitmap;
+        public int Width;
+        public int Height;
 
         public CollisionMask(string path)
         {
             if (!System.IO.File.Exists(path))
                 throw new Exception("Файл коллизионной карты не найден: " + path);
             _collisionBitmap = new Bitmap(path);
+            Width = _collisionBitmap.Width;
+            Height = _collisionBitmap.Height;
         }
 
         public bool CheckCollision(Car car)
@@ -32,7 +36,7 @@ namespace RingRaceLab
             return false;
         }
 
-        private bool IsDrivable(int x, int y)
+        public bool IsDrivable(int x, int y)
         {
             if (x < 0 || y < 0 || x >= _collisionBitmap.Width || y >= _collisionBitmap.Height)
                 return false;

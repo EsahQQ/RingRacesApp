@@ -11,5 +11,6 @@ namespace RingRaceLab
         public float Deceleration { get; set; } = 75f;
         public float TurnSpeed { get; set; } = 180f;
         public Vector2 Size { get; set; } = new Vector2(32f, 16f);
+        public float FuelConsumptionRate { get; set; } = 0.01f;
     }
 }

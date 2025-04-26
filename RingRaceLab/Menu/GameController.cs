@@ -29,7 +29,6 @@ namespace RingRaceLab
             };
 
             SetupGL();
-            SetupExitButton();
         }
 
         private void SetupGL()
@@ -55,6 +54,8 @@ namespace RingRaceLab
             };
 
             _glControl.Resize += (s, e) => SetupViewport();
+
+            _glControl.KeyDown += OnKeyDown;
             GamePanel.Controls.Add(_glControl);
         }
 
@@ -66,26 +67,6 @@ namespace RingRaceLab
             GL.Ortho(0, _glControl.ClientSize.Width, _glControl.ClientSize.Height, 0, -1, 1);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-        }
-
-        private void SetupExitButton()
-        {
-            var btnExit = new Button
-            {
-                Text = "Выйти в меню",
-                Size = new Size(130, 40),
-                BackColor = Color.Gray,
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Location = new Point(10, 10)
-            };
-            btnExit.Click += (s, e) =>
-            {
-                _gameManager.OnCarFinished -= OnCarFinished;
-                _exitToMenu();
-            };
-            GamePanel.Controls.Add(btnExit);
-            btnExit.BringToFront();
         }
 
         public void StartGame(string track, string player1Car, string player2Car)
@@ -101,6 +82,16 @@ namespace RingRaceLab
             _gameManager.OnCarFinished += OnCarFinished;
             _glControl.Invalidate();
         }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                _gameManager.OnCarFinished -= OnCarFinished;
+                _exitToMenu();
+            }
+        }
+
 
         public void HideGame() => GamePanel.Hide();
 

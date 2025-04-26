@@ -7,11 +7,13 @@ namespace RingRaceLab
     {
         private readonly int _textureId;
         private readonly Vector2 _size;
+        public readonly string _texturePath;
 
         public CarRenderer(string texturePath, Vector2 size)
         {
             _size = size;
             _textureId = TextureLoader.LoadFromFile(texturePath);
+            _texturePath = texturePath;
         }
 
         public void Draw(Vector2 position, float angle)

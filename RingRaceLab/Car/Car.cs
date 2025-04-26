@@ -1,5 +1,7 @@
 ﻿using OpenTK;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RingRaceLab
 {
@@ -10,6 +12,9 @@ namespace RingRaceLab
         internal CarPhysics _physics;
         public int lapsComplete = -1;
 
+        public float Fuel { get; set; } = 30;
+        public List<CarDecorator> ActiveDecorators = new List<CarDecorator>();
+
         public Car(Vector2 startPosition, string texturePath, CarConfig config)
         {
             _movement = new CarMovement(startPosition, config);
@@ -19,7 +24,29 @@ namespace RingRaceLab
 
         public void Update(float deltaTime, bool moveForward, bool moveBackward, bool turnLeft, bool turnRight)
         {
-            _movement.Update(deltaTime, moveForward, moveBackward, turnLeft, turnRight);
+            Fuel -= Math.Abs(_movement.CurrentSpeed) * deltaTime * _movement._config.FuelConsumptionRate;
+            Fuel = Math.Max(0, Fuel);
+
+            if (Fuel > 0)
+            {
+                _movement.Update(deltaTime, moveForward, moveBackward, turnLeft, turnRight);
+            }
+
+            // Обновление декораторов
+            foreach (var decorator in ActiveDecorators.ToList())
+            {
+                decorator.Update(deltaTime, moveForward, moveBackward, turnLeft, turnRight);
+            }
+        }
+
+        public void AddDecorator(CarDecorator decorator)
+        {
+            ActiveDecorators.Add(decorator);
+        }
+
+        public void RemoveDecorator(CarDecorator decorator)
+        {
+            ActiveDecorators.Remove(decorator);
         }
 
         public override void Draw()

@@ -1,4 +1,7 @@
 ﻿using OpenTK;
+using System.Windows.Forms;
+using System;
+using RingRaceLab.Game;
 
 namespace RingRaceLab
 {
@@ -10,12 +13,20 @@ namespace RingRaceLab
         public SlowDownPrize(Vector2 position)
         {
             Position = position;
-            TextureId = TextureLoader.LoadFromFile("sprites/slow_prize.png");
+            try
+            {
+                TextureId = TextureCache.GetTexture("sprites/slow_prize.png");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки текстуры: {ex.Message}");
+                TextureId = -1; // Используйте значение по умолчанию
+            }
         }
 
         public void ApplyEffect(Car car)
         {
-            car.AddDecorator(new SlowDownDecorator(car, 0.5f, 5f));
+            car.ApplyDecorator(new SpeedBoostDecorator(car, 0.5f, 5f));
         }
     }
 }

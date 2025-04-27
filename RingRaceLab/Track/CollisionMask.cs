@@ -13,6 +13,7 @@ namespace RingRaceLab
         private readonly Bitmap _collisionBitmap;
         public int Width;
         public int Height;
+        private bool[,] _drivablePixels;
 
         public CollisionMask(string path)
         {
@@ -21,6 +22,15 @@ namespace RingRaceLab
             _collisionBitmap = new Bitmap(path);
             Width = _collisionBitmap.Width;
             Height = _collisionBitmap.Height;
+            _drivablePixels = new bool[Width, Height];
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    Color pixel = _collisionBitmap.GetPixel(x, y);
+                    _drivablePixels[x, y] = pixel.R < 100 && pixel.G < 100 && pixel.B < 100;
+                }
+            }
         }
 
         public bool CheckCollision(Car car)
@@ -38,10 +48,9 @@ namespace RingRaceLab
 
         public bool IsDrivable(int x, int y)
         {
-            if (x < 0 || y < 0 || x >= _collisionBitmap.Width || y >= _collisionBitmap.Height)
+            if (x < 0 || y < 0 || x >= Width || y >= Height)
                 return false;
-            Color pixel = _collisionBitmap.GetPixel(x, y);
-            return pixel.R < 100 && pixel.G < 100 && pixel.B < 100;
+            return _drivablePixels[x, y];
         }
     }
 }

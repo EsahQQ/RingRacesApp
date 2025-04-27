@@ -12,8 +12,8 @@ namespace RingRaceLab
         internal CarPhysics _physics;
         public int lapsComplete = -1;
 
-        public float Fuel { get; set; } = 30;
-        public List<CarDecorator> ActiveDecorators = new List<CarDecorator>();
+        public float Fuel { get; set; } = 100;
+        public CarDecorator _currentDecorator;
 
         public Car(Vector2 startPosition, string texturePath, CarConfig config)
         {
@@ -32,21 +32,21 @@ namespace RingRaceLab
                 _movement.Update(deltaTime, moveForward, moveBackward, turnLeft, turnRight);
             }
 
-            // Обновление декораторов
-            foreach (var decorator in ActiveDecorators.ToList())
-            {
-                decorator.Update(deltaTime, moveForward, moveBackward, turnLeft, turnRight);
-            }
+            // Обновление декоратора
+            _currentDecorator?.Update(deltaTime);
         }
 
-        public void AddDecorator(CarDecorator decorator)
+        public void ApplyDecorator(CarDecorator newDecorator)
         {
-            ActiveDecorators.Add(decorator);
+            _currentDecorator?.Remove();
+            _currentDecorator = newDecorator;
+            _currentDecorator.Apply();
         }
 
-        public void RemoveDecorator(CarDecorator decorator)
+        public void RemoveDecorator()
         {
-            ActiveDecorators.Remove(decorator);
+            _currentDecorator?.Remove();
+            _currentDecorator = null;
         }
 
         public override void Draw()

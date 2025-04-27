@@ -1,23 +1,47 @@
-﻿using System.Timers;
+﻿using System;
+using System.Timers;
 
 namespace RingRaceLab
 {
-    public abstract class CarDecorator : Car
+    public abstract class CarDecorator
     {
-        protected Car _decoratedCar;
-        protected Timer _timer;
+        protected readonly Car _car;
+        public readonly Timer _timer;
+        protected readonly float _duration;
+        public DateTime timerStartTime;
 
-        public CarDecorator(Car car) : base(car._movement.Position, car._renderer._texturePath, car._movement._config)
+        public CarDecorator(Car car, float duration)
         {
-            _decoratedCar = car;
-            _timer = new Timer();
+            _car = car;
+            _duration = duration;
+            _timer = new Timer(duration * 1000);
             _timer.Elapsed += OnTimerEnd;
         }
 
-        protected virtual void OnTimerEnd(object sender, ElapsedEventArgs e)
+        public virtual void Apply()
+        {
+            _timer.Start();
+            timerStartTime = DateTime.Now;
+            ApplyEffect();
+        }
+
+        public virtual void Remove()
         {
             _timer.Stop();
-            _decoratedCar.RemoveDecorator(this);
+            RevertEffect();
+        }
+
+        public void Update(float deltaTime)
+        {
+            // Логика обновления (если требуется)
+        }
+
+        protected abstract void ApplyEffect();
+        protected abstract void RevertEffect();
+
+        private void OnTimerEnd(object sender, ElapsedEventArgs e)
+        {
+            _car.RemoveDecorator();
         }
     }
 }

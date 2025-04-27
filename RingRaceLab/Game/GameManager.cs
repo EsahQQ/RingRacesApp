@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.Linq;
 using System.Timers;
+using System.Threading;
 
 namespace RingRaceLab
 {
@@ -18,7 +19,6 @@ namespace RingRaceLab
         private readonly Stopwatch _stopwatch = new Stopwatch();
         public delegate void CarFinishedHandler(Car finishedCar);
         public event CarFinishedHandler OnCarFinished;
-        private Dictionary<Car, int> _lapsPassed = new Dictionary<Car, int>();
         public Track Track { get; private set; }
         public Car Car1 { get; private set; }
         public Car Car2 { get; private set; }
@@ -31,11 +31,12 @@ namespace RingRaceLab
         };
 
         private System.Timers.Timer _prizeRespawnTimer;
-        private const int MIN_PRIZES = 3;
-        private const int MAX_PRIZES = 5;
+        private const int MIN_PRIZES = 5;
+        private const int MAX_PRIZES = 10;
         private const int RESPAWN_INTERVAL = 3000; // 3 секунд
+        public List<Label> playerLabels;
 
-        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture)
+        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture, List<Label> playerLabels)
         {
             _stopwatch.Start();
             if (spawnPositions == null || spawnPositions.Length < 2)
@@ -45,8 +46,6 @@ namespace RingRaceLab
             CarConfig config2 = new CarConfig(); 
             Car1 = new Car(spawnPositions[0], player1CarTexture, config1);
             Car2 = new Car(spawnPositions[1], player2CarTexture, config2);
-            _lapsPassed.Add(Car1, -1);
-            _lapsPassed.Add(Car2, -1);
             _collisionSystem = new CollisionMask(collisionMap);
             _entities.Add(Track);
             _entities.Add(Car1);
@@ -59,7 +58,7 @@ namespace RingRaceLab
             _prizeRespawnTimer.Elapsed += (s, e) => RespawnPrizes();
             _prizeRespawnTimer.AutoReset = true;
             _prizeRespawnTimer.Start();
-
+            this.playerLabels = playerLabels;
             SpawnPrizes(MAX_PRIZES);
         }
 
@@ -74,16 +73,48 @@ namespace RingRaceLab
             UpdateCar(Car1, deltaTime, input1);
             UpdateCar(Car2, deltaTime, input2);
 
-            foreach (var prize in _activePrizes.ToList())
+            List<IPrize> toRemove = new List<IPrize>();
+            lock (_activePrizes)
             {
-                if (CheckCarPrizeCollision(Car1, prize) || CheckCarPrizeCollision(Car2, prize))
+                foreach (var prize in _activePrizes.ToList())
                 {
-                    prize.ApplyEffect(Car1);
+                    if (CheckCarPrizeCollision(Car1, prize))
+                    {
+                        prize.ApplyEffect(Car1);
+                        _activePrizes.Remove(prize);
+                    }
+                    else if (CheckCarPrizeCollision(Car2, prize))
+                    {
+                        prize.ApplyEffect(Car2);
+                        _activePrizes.Remove(prize);
+                    }
+                }
+                // Удаляем после перебора
+                foreach (var prize in toRemove)
+                {
                     _activePrizes.Remove(prize);
                 }
             }
+            WriteLabel(Car1, playerLabels[0]);
+            WriteLabel(Car2, playerLabels[1]);
 
             glControl.Invalidate();
+        }
+
+        private void WriteLabel(Car car, Label label)
+        {
+            string text = "Топливо: " + (int)car.Fuel;
+            text += "\nКруг: " + ((car.lapsComplete + 1) > 0 ? (car.lapsComplete + 1) : 1) + "/5";
+            text += "\nСкорость: " + (int)car._movement.CurrentSpeed;
+            if (car._currentDecorator != null)
+            {
+                TimeSpan elapsed = DateTime.Now - car._currentDecorator.timerStartTime;
+                int remaining = (int)((car._currentDecorator._timer.Interval - elapsed.TotalMilliseconds) / 1000) + 1;
+                text += "\n";
+                text += remaining;
+            }
+            
+            label.Text = text;
         }
 
         private void UpdateCar(Car car, float deltaTime, (bool forward, bool backward, bool left, bool right) input)
@@ -96,9 +127,9 @@ namespace RingRaceLab
             // Проверка пересечения финиша
             if (Track.FinishLine.CheckCrossing(oldPos, car._movement.Position))
             {
-                _lapsPassed[car]++;
+                car.lapsComplete++;
                 // Триггерим событие финиша
-                if (_lapsPassed[car] == 5)
+                if (car.lapsComplete == 5)
                 {
                     OnCarFinished?.Invoke(car);
                 }
@@ -119,22 +150,26 @@ namespace RingRaceLab
             {
                 entity.Draw();
             }
-            foreach (var prize in _activePrizes)
+            lock (_activePrizes)
             {
-                GL.PushMatrix();
-                GL.Enable(EnableCap.Texture2D);
-                GL.BindTexture(TextureTarget.Texture2D, prize.TextureId);
+                foreach (var prize in _activePrizes)
+                {
+                    GL.PushMatrix();
+                    GL.Enable(EnableCap.Texture2D);
+                    GL.BindTexture(TextureTarget.Texture2D, prize.TextureId);
 
-                // Для текстур 8x16 пикселей
-                GL.Begin(PrimitiveType.Quads);
-                GL.TexCoord2(0, 0); GL.Vertex2(prize.Position.X - 4, prize.Position.Y - 8); // X: -4/+4, Y: -8/+8
-                GL.TexCoord2(1, 0); GL.Vertex2(prize.Position.X + 4, prize.Position.Y - 8);
-                GL.TexCoord2(1, 1); GL.Vertex2(prize.Position.X + 4, prize.Position.Y + 8);
-                GL.TexCoord2(0, 1); GL.Vertex2(prize.Position.X - 4, prize.Position.Y + 8);
-                GL.End();
+                    // Для текстур 16x32 пикселей
+                    GL.Begin(PrimitiveType.Quads);
+                    GL.TexCoord2(0, 0); GL.Vertex2(prize.Position.X - 8, prize.Position.Y - 16); // X: -8/+8, Y: -16/+16
+                    GL.TexCoord2(1, 0); GL.Vertex2(prize.Position.X + 8, prize.Position.Y - 16);
+                    GL.TexCoord2(1, 1); GL.Vertex2(prize.Position.X + 8, prize.Position.Y + 16);
+                    GL.TexCoord2(0, 1); GL.Vertex2(prize.Position.X - 8, prize.Position.Y + 16);
+                    GL.End();
 
-                GL.PopMatrix();
+                    GL.PopMatrix();
+                }
             }
+            
         }
         public void Reset(Vector2[] spawnPositions)
         {

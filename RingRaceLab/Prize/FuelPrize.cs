@@ -1,4 +1,7 @@
 ﻿using OpenTK;
+using System.Windows.Forms;
+using System;
+using RingRaceLab.Game;
 
 namespace RingRaceLab
 {
@@ -10,7 +13,15 @@ namespace RingRaceLab
         public FuelPrize(Vector2 position)
         {
             Position = position;
-            TextureId = TextureLoader.LoadFromFile("sprites/fuel_prize.png");
+            try
+            {
+                TextureId = TextureCache.GetTexture("sprites/fuel_prize.png");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки текстуры: {ex.Message}");
+                TextureId = -1; // Используйте значение по умолчанию
+            }
         }
 
         public void ApplyEffect(Car car)

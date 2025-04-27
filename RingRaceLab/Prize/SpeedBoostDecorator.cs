@@ -1,24 +1,28 @@
 ﻿using RingRaceLab;
 using System.Timers;
 
-public class SpeedBoostDecorator : CarDecorator
+namespace RingRaceLab
 {
-    private float _originalSpeed;
-    private float _multiplier;
-
-    public SpeedBoostDecorator(Car car, float multiplier, float duration) : base(car)
+    public class SpeedBoostDecorator : CarDecorator
     {
-        _multiplier = multiplier;
-        _originalSpeed = car._movement._config.ForwardMaxSpeed;
-        car._movement._config.ForwardMaxSpeed *= multiplier;
+        private readonly float _multiplier;
+        private float _originalSpeed;
 
-        _timer.Interval = duration * 1000;
-        _timer.Start();
-    }
+        public SpeedBoostDecorator(Car car, float multiplier, float duration)
+            : base(car, duration)
+        {
+            _multiplier = multiplier;
+        }
 
-    protected override void OnTimerEnd(object sender, ElapsedEventArgs e)
-    {
-        _decoratedCar._movement._config.ForwardMaxSpeed = _originalSpeed;
-        base.OnTimerEnd(sender, e);
+        protected override void ApplyEffect()
+        {
+            _originalSpeed = _car._movement._config.ForwardMaxSpeed;
+            _car._movement._config.ForwardMaxSpeed *= _multiplier;
+        }
+
+        protected override void RevertEffect()
+        {
+            _car._movement._config.ForwardMaxSpeed = _originalSpeed;
+        }
     }
 }

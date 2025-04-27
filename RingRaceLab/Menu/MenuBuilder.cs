@@ -18,7 +18,7 @@ namespace RingRaceLab
         private readonly Action _onStartGame;
 
         private PictureBox trackPreview;
-        private List<string> trackList = new List<string> { "sprites/road2.png", "sprites/road3.png" };
+        private List<string> trackList = new List<string> { "sprites/road1.png","sprites/road2.png", "sprites/road3.png" };
         private int trackIndex = 0;
 
         private List<string> player1Cars = new List<string> { "sprites/car1_blue_menu.png", "sprites/car2_blue_menu.png" };

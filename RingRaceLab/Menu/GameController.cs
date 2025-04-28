@@ -17,7 +17,7 @@ namespace RingRaceLab
         private readonly Action _exitToMenu;
         private GameManager _gameManager;
         private GLControl _glControl;
-        public List<Label> playerLabels = new List<Label>() { new Label(), new Label() };
+        public List<FlowLayoutPanel> playerPanels = new List<FlowLayoutPanel>() { new FlowLayoutPanel(), new FlowLayoutPanel() };
 
         public GameController(Action exitToMenu)
         {
@@ -28,17 +28,11 @@ namespace RingRaceLab
                 BackColor = Color.Black,
                 Visible = false
             };
-            playerLabels[0].Anchor = (AnchorStyles.Left | AnchorStyles.Top);
-            playerLabels[1].Anchor = (AnchorStyles.Right | AnchorStyles.Top);
-            foreach (Label label in playerLabels)
-            {
-                label.Width = 200;
-                label.Height = 100;
-                label.BackColor = Color.White;
-                GamePanel.Controls.Add(label);
-            }
-
+            playerPanels[0].Anchor = (AnchorStyles.Left | AnchorStyles.Top);
+            playerPanels[1].Anchor = (AnchorStyles.Right | AnchorStyles.Top);
+            
             SetupGL();
+            
         }
 
         private void SetupGL()
@@ -47,7 +41,6 @@ namespace RingRaceLab
             {
                 Dock = DockStyle.Fill
             };
-
             _glControl.Load += (s, e) =>
             {
                 GL.ClearColor(Color4.CornflowerBlue);
@@ -88,7 +81,7 @@ namespace RingRaceLab
             Vector2[] spawnPositions = GameConstants.TrackSpawnPositions[track];
             Vector2[] finishPositions = GameConstants.TrackFinishPositions[track];
 
-            _gameManager = new GameManager(track, collisionMap, spawnPositions, finishPositions, player1Car, player2Car, playerLabels);
+            _gameManager = new GameManager(track, collisionMap, spawnPositions, finishPositions, player1Car, player2Car, playerPanels);
             _gameManager.OnCarFinished += OnCarFinished;
             _glControl.Invalidate();
         }
@@ -110,5 +103,7 @@ namespace RingRaceLab
             MessageBox.Show($"Игрок {(car._renderer._texturePath.Contains('1') ? '1' : '2')} победил!");
             _exitToMenu();
         }
+
+        
     }
 }

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Timers;
 using System.Threading;
+using System.Drawing;
 
 namespace RingRaceLab
 {
@@ -30,13 +31,21 @@ namespace RingRaceLab
             new SlowDownPrizeFactory()
         };
 
+        private int _currentFuelLevel1 = 5;
+        private int _currentSpeedLevel1 = 0;
+        private int _currentSlowLevel1 = 0;
+
+        private int _currentFuelLevel2 = 5;
+        private int _currentSpeedLevel2 = 0;
+        private int _currentSlowLevel2 = 0;
+
         private System.Timers.Timer _prizeRespawnTimer;
         private const int MIN_PRIZES = 5;
         private const int MAX_PRIZES = 10;
         private const int RESPAWN_INTERVAL = 3000; // 3 секунд
-        public List<Label> playerLabels;
+        private Dictionary<string, int> _textures = new Dictionary<string, int>();
 
-        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture, List<Label> playerLabels)
+        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture, List<FlowLayoutPanel> playerPanels)
         {
             _stopwatch.Start();
             if (spawnPositions == null || spawnPositions.Length < 2)
@@ -58,8 +67,87 @@ namespace RingRaceLab
             _prizeRespawnTimer.Elapsed += (s, e) => RespawnPrizes();
             _prizeRespawnTimer.AutoReset = true;
             _prizeRespawnTimer.Start();
-            this.playerLabels = playerLabels;
             SpawnPrizes(MAX_PRIZES);
+            LoadTextures();
+        }
+
+        private void LoadTextures()
+        {
+            // Индикаторы
+            _textures["fuel0"] = TextureLoader.LoadFromFile("sprites/fuel_indicator_0.png");
+            _textures["fuel1"] = TextureLoader.LoadFromFile("sprites/fuel_indicator_1.png");
+            _textures["fuel2"] = TextureLoader.LoadFromFile("sprites/fuel_indicator_2.png");
+            _textures["fuel3"] = TextureLoader.LoadFromFile("sprites/fuel_indicator_3.png");
+            _textures["fuel4"] = TextureLoader.LoadFromFile("sprites/fuel_indicator_4.png");
+            _textures["fuel5"] = TextureLoader.LoadFromFile("sprites/fuel_indicator_5.png");
+
+            _textures["speed0"] = TextureLoader.LoadFromFile("sprites/speed_indicator_0.png");
+            _textures["speed1"] = TextureLoader.LoadFromFile("sprites/speed_indicator_1.png");
+            _textures["speed2"] = TextureLoader.LoadFromFile("sprites/speed_indicator_2.png");
+            _textures["speed3"] = TextureLoader.LoadFromFile("sprites/speed_indicator_3.png");
+            _textures["speed4"] = TextureLoader.LoadFromFile("sprites/speed_indicator_4.png");
+            _textures["speed5"] = TextureLoader.LoadFromFile("sprites/speed_indicator_5.png");
+
+            _textures["slow0"] = TextureLoader.LoadFromFile("sprites/slow_indicator_0.png");
+            _textures["slow1"] = TextureLoader.LoadFromFile("sprites/slow_indicator_1.png");
+            _textures["slow2"] = TextureLoader.LoadFromFile("sprites/slow_indicator_2.png");
+            _textures["slow3"] = TextureLoader.LoadFromFile("sprites/slow_indicator_3.png");
+            _textures["slow4"] = TextureLoader.LoadFromFile("sprites/slow_indicator_4.png");
+            _textures["slow5"] = TextureLoader.LoadFromFile("sprites/slow_indicator_5.png");
+
+        }
+
+        private void UpdateIndicators(Car car, ref int fuel, ref int speed, ref int slow)
+        {
+            if (car.Fuel > 80) fuel = 5;
+            else if (car.Fuel > 60) fuel = 4;
+            else if (car.Fuel > 40) fuel = 3;
+            else if (car.Fuel > 20) fuel = 2;
+            else if (car.Fuel > 0) fuel = 1;
+            else fuel = 0;
+            if (car._currentDecorator != null)
+            {
+                TimeSpan elapsed = DateTime.Now - car._currentDecorator.timerStartTime;
+                int remaining = (int)((car._currentDecorator._timer.Interval - elapsed.TotalMilliseconds) / 1000) + 1;
+
+                if (car._currentDecorator is SpeedBoostDecorator)
+                {
+                    if (remaining == 5)
+                        speed = 5;
+                    else if (remaining == 4)
+                        speed = 4;
+                    else if (remaining == 3)
+                        speed = 3;
+                    else if (remaining == 2)
+                        speed = 2;
+                    else if (remaining == 1)
+                        speed = 1;
+                    else
+                        speed = 0;
+                    slow = 0;
+                }
+                else
+                {
+                    if (remaining == 5)
+                        slow = 5;
+                    else if (remaining == 4)
+                        slow = 4;
+                    else if (remaining == 3)
+                        slow = 3;
+                    else if (remaining == 2)
+                        slow = 2;
+                    else if (remaining == 1)
+                        slow = 1;
+                    else
+                        slow = 0;
+                    speed = 0;
+                }
+            }
+            else
+            {
+                speed = 0;
+                slow = 0;
+            }
         }
 
         public void Update(GLControl glControl)
@@ -95,27 +183,12 @@ namespace RingRaceLab
                     _activePrizes.Remove(prize);
                 }
             }
-            WriteLabel(Car1, playerLabels[0]);
-            WriteLabel(Car2, playerLabels[1]);
-
+            UpdateIndicators(Car1, ref _currentFuelLevel1, ref _currentSpeedLevel1, ref _currentSlowLevel1);
+            UpdateIndicators(Car2, ref _currentFuelLevel2, ref _currentSpeedLevel2, ref _currentSlowLevel2);
             glControl.Invalidate();
         }
 
-        private void WriteLabel(Car car, Label label)
-        {
-            string text = "Топливо: " + (int)car.Fuel;
-            text += "\nКруг: " + ((car.lapsComplete + 1) > 0 ? (car.lapsComplete + 1) : 1) + "/5";
-            text += "\nСкорость: " + (int)car._movement.CurrentSpeed;
-            if (car._currentDecorator != null)
-            {
-                TimeSpan elapsed = DateTime.Now - car._currentDecorator.timerStartTime;
-                int remaining = (int)((car._currentDecorator._timer.Interval - elapsed.TotalMilliseconds) / 1000) + 1;
-                text += "\n";
-                text += remaining;
-            }
-            
-            label.Text = text;
-        }
+        
 
         private void UpdateCar(Car car, float deltaTime, (bool forward, bool backward, bool left, bool right) input)
         {
@@ -150,6 +223,7 @@ namespace RingRaceLab
             {
                 entity.Draw();
             }
+            DrawPlayerHUD();
             lock (_activePrizes)
             {
                 foreach (var prize in _activePrizes)
@@ -231,7 +305,7 @@ namespace RingRaceLab
             return true;
         }
 
-        // Новый метод для респауна
+        // метод для респауна
         private void RespawnPrizes()
         {
             if (_activePrizes.Count < MIN_PRIZES)
@@ -239,6 +313,35 @@ namespace RingRaceLab
                 int needed = MAX_PRIZES - _activePrizes.Count;
                 SpawnPrizes(needed);
             }
+        }
+        private void DrawPlayerHUD()
+        {
+            // Панель игрока 1
+            DrawIndicator(new Rectangle(5, 5, 160, 40), $"fuel{_currentFuelLevel1}");
+            DrawIndicator(new Rectangle(5, 50, 160, 40), $"speed{_currentSpeedLevel1}");
+            DrawIndicator(new Rectangle(5, 95, 160, 40), $"slow{_currentSlowLevel1}");
+
+            // Панель игрока 2
+            DrawIndicator(new Rectangle(1920 - 165, 5, 160, 40), $"fuel{_currentFuelLevel2}");
+            DrawIndicator(new Rectangle(1920 - 165, 50, 160, 40), $"speed{_currentSpeedLevel2}");
+            DrawIndicator(new Rectangle(1920 - 165, 95, 160, 40), $"slow{_currentSlowLevel2}");
+        }
+
+        private void DrawIndicator(Rectangle rect, string textureKey)
+        {
+            if (!_textures.TryGetValue(textureKey, out int textureId)) return;
+
+            GL.Enable(EnableCap.Texture2D);
+            GL.BindTexture(TextureTarget.Texture2D, textureId);
+
+            GL.Begin(PrimitiveType.Quads);
+            GL.TexCoord2(0, 0); GL.Vertex2(rect.Left, rect.Top);
+            GL.TexCoord2(1, 0); GL.Vertex2(rect.Right, rect.Top);
+            GL.TexCoord2(1, 1); GL.Vertex2(rect.Right, rect.Bottom);
+            GL.TexCoord2(0, 1); GL.Vertex2(rect.Left, rect.Bottom);
+            GL.End();
+
+            GL.Disable(EnableCap.Texture2D);
         }
     }
 }

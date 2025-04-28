@@ -26,7 +26,7 @@ namespace RingRaceLab
 
         public void ApplyEffect(Car car)
         {
-            car.Fuel += 50;
+            car.Fuel = Math.Min(car.Fuel + 40, 100);
         }
     }
 }

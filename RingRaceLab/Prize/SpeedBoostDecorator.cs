@@ -1,5 +1,4 @@
-﻿using RingRaceLab;
-using System.Timers;
+﻿using System.Timers;
 
 namespace RingRaceLab
 {

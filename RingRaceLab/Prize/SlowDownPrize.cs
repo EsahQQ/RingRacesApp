@@ -26,7 +26,7 @@ namespace RingRaceLab
 
         public void ApplyEffect(Car car)
         {
-            car.ApplyDecorator(new SpeedBoostDecorator(car, 0.5f, 5f));
+            car.ApplyDecorator(new SlowDownDecorator(car, 0.5f, 5f));
         }
     }
 }

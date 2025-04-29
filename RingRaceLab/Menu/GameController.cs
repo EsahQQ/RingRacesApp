@@ -8,23 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
+using RingRaceLab.Menu;
 
 namespace RingRaceLab
 {
     public class GameController : IGameController
     {
         public Panel GamePanel { get; }
-        private readonly Action _exitToMenu;
+        public readonly Action _exitToMenu;
         private GameManager _gameManager;
         private GLControl _glControl;
-        public FlowLayoutPanel GameFinishedPanel;
         public PictureBox player;
-        public PictureBox win;
-        public Button ExitToMenuButton;
-        public bool flag = false;
+        private readonly GameBuilder gameBuilder;
         public GameController(Action exitToMenu)
         {
-            _exitToMenu = exitToMenu;
             GamePanel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -32,57 +29,13 @@ namespace RingRaceLab
                 Visible = false
             };
 
-            GameFinishedPanel = new FlowLayoutPanel
-            {
-                FlowDirection = FlowDirection.TopDown,
-                Visible = false,
-                Width = 500,
-                Height = 500,
-                Location = new Point(1920/2 - 250, 1080/2 - 250),
-                BackgroundImage = Image.FromFile("sprites/EndGamePanel.png"),
-            };
-            player = new PictureBox
-            {
-                Height = 100,
-                Width = 494,
-                BackColor = Color.Transparent,
-                SizeMode = PictureBoxSizeMode.CenterImage,
-            };
-            win = new PictureBox
-            {
-                Width = 494,
-                Height = 100,
-                BackColor = Color.Transparent,
-                SizeMode = PictureBoxSizeMode.CenterImage,
-                Image = Image.FromFile("sprites/win.png")
-            };
-            ExitToMenuButton = new Button
-            {
-                Width = 280,
-                Height = 130,
-                FlatStyle = FlatStyle.Flat,
-                Margin = new Padding (110, 60, 0, 0),
-                BackgroundImageLayout = ImageLayout.Stretch,
-                BackgroundImage = Image.FromFile("sprites/ExitToMenuButton.png"),
-                BackColor = Color.Transparent
-            };
-            ExitToMenuButton.Click += ExitToMenuButton_Click;
-            ExitToMenuButton.FlatAppearance.BorderSize = 0;
-            ExitToMenuButton.FlatAppearance.MouseDownBackColor = Color.Transparent;
-            ExitToMenuButton.FlatAppearance.MouseOverBackColor = Color.Transparent;
-            GameFinishedPanel.Controls.Add(player);
-            GameFinishedPanel.Controls.Add(win);
-            GameFinishedPanel.Controls.Add(ExitToMenuButton);
-            GamePanel.Controls.Add(GameFinishedPanel);
+            _exitToMenu = exitToMenu;
+            gameBuilder = new GameBuilder(GamePanel, _exitToMenu);
+            gameBuilder.Build();
             SetupGL();
         }
 
-        private void ExitToMenuButton_Click(object sender, EventArgs e)
-        {
-            _exitToMenu();
-            flag = false;
-            GameFinishedPanel.Visible = false;
-        }
+
 
         private void SetupGL()
         {
@@ -100,7 +53,7 @@ namespace RingRaceLab
 
             _glControl.Paint += (s, e) =>
             {
-                if (!flag)
+                if (!gameBuilder.flag)
                 {
                     _gameManager?.Update(_glControl);
                     _gameManager?.Draw();
@@ -153,12 +106,9 @@ namespace RingRaceLab
 
         private void OnCarFinished(Car car)
         {
-            flag = true;
-            player.Image = Image.FromFile(car._renderer._texturePath.Contains("blue") ? "sprites/player1_win.png" : "sprites/player2_win.png");
-            GameFinishedPanel.Visible = true;
-            //MessageBox.Show($"Игрок {(car._renderer._texturePath.Contains("blue") ? '1' : '2')} победил!");
-            //_exitToMenu();
-
+            gameBuilder.flag = true;
+            gameBuilder.SetWinner(Image.FromFile(car._renderer._texturePath.Contains("blue") ? "sprites/player1_win.png" : "sprites/player2_win.png"));
+            gameBuilder.ShowFinishedPanel();
         }
     }
 }

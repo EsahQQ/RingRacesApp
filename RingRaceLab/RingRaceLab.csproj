@@ -56,7 +56,12 @@
     <Compile Include="Car\CarMovement.cs" />
     <Compile Include="Car\CarPhysics.cs" />
     <Compile Include="Car\CarRenderer.cs" />
+    <Compile Include="Game\EntityManager.cs" />
+    <Compile Include="Game\HUDRenderer.cs" />
+    <Compile Include="Game\InputManager.cs" />
+    <Compile Include="Game\PrizeManager.cs" />
     <Compile Include="Game\TextureCache.cs" />
+    <Compile Include="Menu\GameBuilder.cs" />
     <Compile Include="Prize\FuelPrize.cs" />
     <Compile Include="Prize\IPrize.cs" />
     <Compile Include="Menu\GameConstants.cs" />

@@ -46,7 +46,7 @@ namespace RingRaceLab
             return false;
         }
 
-        public bool IsDrivable(int x, int y)
+        public virtual bool IsDrivable(int x, int y)
         {
             if (x < 0 || y < 0 || x >= Width || y >= Height)
                 return false;

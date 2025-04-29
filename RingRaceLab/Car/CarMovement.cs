@@ -55,6 +55,8 @@ namespace RingRaceLab
             UpdatePosition(deltaTime);
         }
 
+
+
         private void ApplyDeceleration(float deltaTime)
         {
             if (CurrentSpeed > 0)

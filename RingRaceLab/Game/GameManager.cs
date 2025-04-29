@@ -45,7 +45,7 @@ namespace RingRaceLab
         private const int RESPAWN_INTERVAL = 3000; // 3 секунд
         private Dictionary<string, int> _textures = new Dictionary<string, int>();
 
-        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture, List<FlowLayoutPanel> playerPanels)
+        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture)
         {
             _stopwatch.Start();
             if (spawnPositions == null || spawnPositions.Length < 2)

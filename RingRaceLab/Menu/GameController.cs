@@ -17,8 +17,11 @@ namespace RingRaceLab
         private readonly Action _exitToMenu;
         private GameManager _gameManager;
         private GLControl _glControl;
-        public List<FlowLayoutPanel> playerPanels = new List<FlowLayoutPanel>() { new FlowLayoutPanel(), new FlowLayoutPanel() };
-
+        public FlowLayoutPanel GameFinishedPanel;
+        public PictureBox player;
+        public PictureBox win;
+        public Button ExitToMenuButton;
+        public bool flag = false;
         public GameController(Action exitToMenu)
         {
             _exitToMenu = exitToMenu;
@@ -28,11 +31,57 @@ namespace RingRaceLab
                 BackColor = Color.Black,
                 Visible = false
             };
-            playerPanels[0].Anchor = (AnchorStyles.Left | AnchorStyles.Top);
-            playerPanels[1].Anchor = (AnchorStyles.Right | AnchorStyles.Top);
-            
+
+            GameFinishedPanel = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                Visible = false,
+                Width = 500,
+                Height = 500,
+                Location = new Point(1920/2 - 250, 1080/2 - 250),
+                BackgroundImage = Image.FromFile("sprites/EndGamePanel.png"),
+            };
+            player = new PictureBox
+            {
+                Height = 100,
+                Width = 494,
+                BackColor = Color.Transparent,
+                SizeMode = PictureBoxSizeMode.CenterImage,
+            };
+            win = new PictureBox
+            {
+                Width = 494,
+                Height = 100,
+                BackColor = Color.Transparent,
+                SizeMode = PictureBoxSizeMode.CenterImage,
+                Image = Image.FromFile("sprites/win.png")
+            };
+            ExitToMenuButton = new Button
+            {
+                Width = 280,
+                Height = 130,
+                FlatStyle = FlatStyle.Flat,
+                Margin = new Padding (110, 60, 0, 0),
+                BackgroundImageLayout = ImageLayout.Stretch,
+                BackgroundImage = Image.FromFile("sprites/ExitToMenuButton.png"),
+                BackColor = Color.Transparent
+            };
+            ExitToMenuButton.Click += ExitToMenuButton_Click;
+            ExitToMenuButton.FlatAppearance.BorderSize = 0;
+            ExitToMenuButton.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            ExitToMenuButton.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            GameFinishedPanel.Controls.Add(player);
+            GameFinishedPanel.Controls.Add(win);
+            GameFinishedPanel.Controls.Add(ExitToMenuButton);
+            GamePanel.Controls.Add(GameFinishedPanel);
             SetupGL();
-            
+        }
+
+        private void ExitToMenuButton_Click(object sender, EventArgs e)
+        {
+            _exitToMenu();
+            flag = false;
+            GameFinishedPanel.Visible = false;
         }
 
         private void SetupGL()
@@ -51,8 +100,12 @@ namespace RingRaceLab
 
             _glControl.Paint += (s, e) =>
             {
-                _gameManager?.Update(_glControl);
-                _gameManager?.Draw();
+                if (!flag)
+                {
+                    _gameManager?.Update(_glControl);
+                    _gameManager?.Draw();
+                }
+                
                 _glControl.SwapBuffers();
             };
 
@@ -81,7 +134,7 @@ namespace RingRaceLab
             Vector2[] spawnPositions = GameConstants.TrackSpawnPositions[track];
             Vector2[] finishPositions = GameConstants.TrackFinishPositions[track];
 
-            _gameManager = new GameManager(track, collisionMap, spawnPositions, finishPositions, player1Car, player2Car, playerPanels);
+            _gameManager = new GameManager(track, collisionMap, spawnPositions, finishPositions, player1Car, player2Car);
             _gameManager.OnCarFinished += OnCarFinished;
             _glControl.Invalidate();
         }
@@ -100,10 +153,12 @@ namespace RingRaceLab
 
         private void OnCarFinished(Car car)
         {
-            MessageBox.Show($"Игрок {(car._renderer._texturePath.Contains('1') ? '1' : '2')} победил!");
-            _exitToMenu();
-        }
+            flag = true;
+            player.Image = Image.FromFile(car._renderer._texturePath.Contains("blue") ? "sprites/player1_win.png" : "sprites/player2_win.png");
+            GameFinishedPanel.Visible = true;
+            //MessageBox.Show($"Игрок {(car._renderer._texturePath.Contains("blue") ? '1' : '2')} победил!");
+            //_exitToMenu();
 
-        
+        }
     }
 }

@@ -171,8 +171,9 @@ namespace RingRaceLab
 
             car.Update(deltaTime, input.forward, input.backward, input.left, input.right);
 
+            int hasCrossed = Track.FinishLine.CheckCrossing(oldPos, car._movement.Position);
             // Проверка пересечения финиша
-            if (Track.FinishLine.CheckCrossing(oldPos, car._movement.Position))
+            if (hasCrossed == 1)
             {
                 car.lapsComplete++;
                 // Триггерим событие финиша
@@ -180,6 +181,10 @@ namespace RingRaceLab
                 {
                     OnCarFinished?.Invoke(car);
                 }
+            }
+            else if (hasCrossed == -1)
+            {
+                car.lapsComplete--;
             }
 
             if (_collisionSystem.CheckCollision(car))

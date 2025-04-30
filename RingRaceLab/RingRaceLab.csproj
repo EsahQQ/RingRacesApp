@@ -79,7 +79,6 @@
     <Compile Include="Track\FinishLine.cs" />
     <Compile Include="Game\GameEntity.cs" />
     <Compile Include="Game\GameManager.cs" />
-    <Compile Include="Game\InputHandler.cs" />
     <Compile Include="Track\LineIntersection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Game\TextureLoader.cs" />

@@ -20,15 +20,26 @@ namespace RingRaceLab
             _endPoint = end;
         }
 
-        public bool CheckCrossing(Vector2 previousPosition, Vector2 currentPosition)
+        public int CheckCrossing(Vector2 previousPosition, Vector2 currentPosition)
         {
             // Проверяем пересечение линии с помощью алгоритма пересечения отрезков
-            return LineIntersection.CheckLineCrossing(
-                previousPosition,
-                currentPosition,
-                _startPoint,
-                _endPoint
-            );
+            if (LineIntersection.CheckLineCrossing(
+                    previousPosition,
+                    currentPosition,
+                    _startPoint,
+                    _endPoint
+                ))
+            {
+                if (previousPosition.X < currentPosition.X)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            return 0;
         }
     }
 }

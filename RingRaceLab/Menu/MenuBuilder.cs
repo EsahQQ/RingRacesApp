@@ -10,6 +10,8 @@ namespace RingRaceLab
 {
     public class MenuBuilder
     {
+        private readonly int Width;
+        private readonly int Height;
         public string SelectedTrack => trackList[trackIndex];
         public string Player1CarTexture => player1Cars[player1Index].Replace("_menu", "");
         public string Player2CarTexture => player2Cars[player2Index].Replace("_menu", "");
@@ -26,8 +28,10 @@ namespace RingRaceLab
         private int player1Index = 0;
         private int player2Index = 0;
 
-        public MenuBuilder(Panel panel, Action onStartGame)
+        public MenuBuilder(Panel panel, Action onStartGame, int Width, int Height)
         {
+            this.Width = Width;
+            this.Height = Height;
             _menuPanel = panel;
             _onStartGame = onStartGame;
             Build();
@@ -66,7 +70,7 @@ namespace RingRaceLab
             // Добавляем кнопку выхода
             var exitButton = new Button
             {
-                Size = new Size(144, 144),
+                Size = new Size(Width/13, (int)(Height/7.5)),
                 BackgroundImage = Image.FromFile("sprites/close.png"),
                 BackgroundImageLayout = ImageLayout.Stretch,
                 Anchor = AnchorStyles.Right | AnchorStyles.Top,
@@ -99,7 +103,7 @@ namespace RingRaceLab
             {
                 Image = Image.FromFile(isPlayer1 ? "sprites/player1_menu.png" : "sprites/player2_menu.png"),
                 SizeMode = PictureBoxSizeMode.StretchImage,
-                Size = new Size(600, 100),
+                Size = new Size(Width/3, (int)(Height/10.8)),
                 Dock = DockStyle.Top,
                 Anchor = AnchorStyles.Right
             };
@@ -109,9 +113,9 @@ namespace RingRaceLab
             var carPreview = new PictureBox
             {
                 SizeMode = PictureBoxSizeMode.CenterImage,
-                Size = new Size(160, 320),
+                Size = new Size(Width/12, (int)(Height/3.4)),
                 Dock = DockStyle.Top,
-                Margin = new Padding(0, 10, 0, 10)
+                Margin = new Padding(0, Height/108, 0, Height/108)
             };
             void UpdateCarPreview()
             {
@@ -125,8 +129,8 @@ namespace RingRaceLab
             tl.Controls.Add(carPreview, 0, 2);
 
             // --- 3) кнопки переключения
-            var btnL = new Button { Size = new Size(144, 144), BackgroundImageLayout = ImageLayout.Stretch };
-            var btnR = new Button { Size = new Size(144, 144), BackgroundImageLayout = ImageLayout.Stretch };
+            var btnL = new Button { Size = new Size(Width / 13, (int)(Height / 7.5)), BackgroundImageLayout = ImageLayout.Stretch };
+            var btnR = new Button { Size = new Size(Width / 13, (int)(Height / 7.5)), BackgroundImageLayout = ImageLayout.Stretch };
             btnL.BackgroundImage = Image.FromFile("sprites/button_left.png");
             btnR.BackgroundImage = Image.FromFile("sprites/button_right.png");
             StyleButton(btnL);
@@ -155,7 +159,7 @@ namespace RingRaceLab
                 Dock = DockStyle.Bottom,
                 AutoSize = true,
                 Anchor = AnchorStyles.Bottom,
-                Padding = new Padding(0, 0, 0, 20)
+                Padding = new Padding(0, 0, 0, Height / 54)
             };
             flow.Controls.Add(btnL);
             flow.Controls.Add(btnR);
@@ -182,15 +186,15 @@ namespace RingRaceLab
             {
                 Image = Image.FromFile(trackList[trackIndex]),
                 SizeMode = PictureBoxSizeMode.StretchImage,
-                Size = new Size(630, (int)(260 * 1.3)),
+                Size = new Size(Width/3, (int)(Height/3.2)),
                 Dock = DockStyle.Top,
-                Margin = new Padding(0, 20, 0, 20)
+                Margin = new Padding(0, Height/54, 0, Height/54)
             };
             tl.Controls.Add(trackPreview, 0, 1);
 
             // --- кнопки L/R
-            var btnLeft = new Button { Size = new Size(144, 144), BackgroundImageLayout = ImageLayout.Stretch };
-            var btnRight = new Button { Size = new Size(144, 144), BackgroundImageLayout = ImageLayout.Stretch };
+            var btnLeft = new Button { Size = new Size(Width / 13, (int)(Height / 7.5)), BackgroundImageLayout = ImageLayout.Stretch };
+            var btnRight = new Button { Size = new Size(Width / 13, (int)(Height / 7.5)), BackgroundImageLayout = ImageLayout.Stretch };
             btnLeft.BackgroundImage = Image.FromFile("sprites/button_left.png");
             btnRight.BackgroundImage = Image.FromFile("sprites/button_right.png");
             StyleButton(btnLeft);
@@ -213,7 +217,7 @@ namespace RingRaceLab
                 AutoSize = true,
                 Dock = DockStyle.Top,
                 Anchor = AnchorStyles.Top,
-                Margin = new Padding(0, 0, 0, 20)
+                Margin = new Padding(0, 0, 0, Height / 54)
             };
             flowLR.Controls.Add(btnLeft);
             flowLR.Controls.Add(btnRight);
@@ -222,11 +226,11 @@ namespace RingRaceLab
             // --- btnStart
             var btnStart = new Button
             {
-                Size = new Size(630, 260),
+                Size = new Size(Width/3, (int)(Height/4.15)),
                 BackgroundImage = Image.FromFile("sprites/button_up.png"),
                 BackgroundImageLayout = ImageLayout.Stretch,
                 Dock = DockStyle.Top,
-                Margin = new Padding(0, 0, 0, 20)
+                Margin = new Padding(0, 0, 0, Height / 54)
             };
             StyleButton(btnStart);
             btnStart.Click += (s, e) => _onStartGame();

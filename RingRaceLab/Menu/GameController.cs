@@ -20,7 +20,7 @@ namespace RingRaceLab
         private GLControl _glControl;
         public PictureBox player;
         private readonly GameBuilder gameBuilder;
-        public GameController(Action exitToMenu)
+        public GameController(Action exitToMenu, int Width, int Height)
         {
             GamePanel = new Panel
             {
@@ -30,7 +30,7 @@ namespace RingRaceLab
             };
 
             _exitToMenu = exitToMenu;
-            gameBuilder = new GameBuilder(GamePanel, _exitToMenu);
+            gameBuilder = new GameBuilder(GamePanel, _exitToMenu, Width, Height);
             gameBuilder.Build();
             SetupGL();
         }
@@ -86,8 +86,7 @@ namespace RingRaceLab
             string collisionMap = track.Replace(".png", "_map.png");
             Vector2[] spawnPositions = GameConstants.TrackSpawnPositions[track];
             Vector2[] finishPositions = GameConstants.TrackFinishPositions[track];
-
-            _gameManager = new GameManager(track, collisionMap, spawnPositions, finishPositions, player1Car, player2Car);
+            _gameManager = new GameManager(track, collisionMap, spawnPositions, finishPositions, player1Car, player2Car, _glControl.Width, _glControl.Height);
             _gameManager.OnCarFinished += OnCarFinished;
             _glControl.Invalidate();
         }

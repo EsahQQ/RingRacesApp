@@ -16,11 +16,15 @@ namespace RingRaceLab.Game
         private const int MIN_PRIZES = 5;
         public const int MAX_PRIZES = 10;
         private const int RESPAWN_INTERVAL = 3000;
+        private readonly int Width;
+        private readonly int Height;
 
-        public PrizeManager(PrizeFactory[] prizeFactories, CollisionMask collisionSystem)
+        public PrizeManager(PrizeFactory[] prizeFactories, CollisionMask collisionSystem, int Width, int Height)
         {
             _prizeFactories = prizeFactories;
             _collisionSystem = collisionSystem;
+            this.Width = Width;
+            this.Height = Height;
             _prizeRespawnTimer = new System.Timers.Timer(RESPAWN_INTERVAL);
             _prizeRespawnTimer.Elapsed += (s, e) => RespawnPrizes();
             _prizeRespawnTimer.AutoReset = true;
@@ -34,7 +38,7 @@ namespace RingRaceLab.Game
             int spawned = 0;
             while (spawned < count && maxAttempts-- > 0)
             {
-                Vector2 position = new Vector2(rand.Next(50, _collisionSystem.Width - 50), rand.Next(50, _collisionSystem.Height - 50));
+                Vector2 position = new Vector2(rand.Next((int)(Width / 38.4), _collisionSystem.Width - (int)(Width / 38.4)), rand.Next((int)(Width / 38.4), _collisionSystem.Height - (int)(Width / 38.4)));
                 if (IsValidPosition(position))
                 {
                     var factory = _prizeFactories[rand.Next(_prizeFactories.Length)];
@@ -49,7 +53,7 @@ namespace RingRaceLab.Game
             if (!_collisionSystem.IsDrivable((int)position.X, (int)position.Y)) return false;
             foreach (var prize in _activePrizes)
             {
-                if (Vector2.Distance(position, prize.Position) < 50) return false;
+                if (Vector2.Distance(position, prize.Position) < (int)(Width / 38.4)) return false;
             }
             return true;
         }
@@ -60,7 +64,7 @@ namespace RingRaceLab.Game
             {
                 for (int i = _activePrizes.Count - 1; i >= 0; i--)
                 {
-                    if (Vector2.Distance(car._movement.Position, _activePrizes[i].Position) < 50)
+                    if (Vector2.Distance(car._movement.Position, _activePrizes[i].Position) < (int)(Width/38.4))
                     {
                         _activePrizes[i].ApplyEffect(car);
                         _activePrizes.RemoveAt(i);
@@ -88,10 +92,10 @@ namespace RingRaceLab.Game
                     GL.Enable(EnableCap.Texture2D);
                     GL.BindTexture(TextureTarget.Texture2D, prize.TextureId);
                     GL.Begin(PrimitiveType.Quads);
-                    GL.TexCoord2(0, 0); GL.Vertex2(prize.Position.X - 8, prize.Position.Y - 16);
-                    GL.TexCoord2(1, 0); GL.Vertex2(prize.Position.X + 8, prize.Position.Y - 16);
-                    GL.TexCoord2(1, 1); GL.Vertex2(prize.Position.X + 8, prize.Position.Y + 16);
-                    GL.TexCoord2(0, 1); GL.Vertex2(prize.Position.X - 8, prize.Position.Y + 16);
+                    GL.TexCoord2(0, 0); GL.Vertex2(prize.Position.X - Width / 240, prize.Position.Y - (int)(Height / 67.5));
+                    GL.TexCoord2(1, 0); GL.Vertex2(prize.Position.X + Width / 240, prize.Position.Y - (int)(Height / 67.5));
+                    GL.TexCoord2(1, 1); GL.Vertex2(prize.Position.X + Width / 240, prize.Position.Y + (int)(Height / 67.5));
+                    GL.TexCoord2(0, 1); GL.Vertex2(prize.Position.X - Width / 240, prize.Position.Y + (int)(Height / 67.5));
                     GL.End();
                     GL.PopMatrix();
                 }

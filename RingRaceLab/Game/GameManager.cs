@@ -37,14 +37,20 @@ namespace RingRaceLab
 
         private Dictionary<string, int> _textures = new Dictionary<string, int>();
 
-        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture)
+        public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture, int Width, int Height)
         {
             _stopwatch.Start();
             if (spawnPositions == null || spawnPositions.Length < 2)
                 throw new ArgumentException("Необходимо задать хотя бы две стартовые позиции.", nameof(spawnPositions));
-            Track = new Track(trackTexture, spawnPositions, finishPosition[0], finishPosition[1]);
-            CarConfig config1 = new CarConfig(); // Можно настроить параметры по умолчанию или передать специфичные
-            CarConfig config2 = new CarConfig(); 
+            Track = new Track(trackTexture, spawnPositions, finishPosition[0], finishPosition[1], Width, Height);
+            CarConfig config1 = new CarConfig
+            {
+                Size = new Vector2(Width / 60, (int)(Height / 67.5)),
+            }; 
+            CarConfig config2 = new CarConfig
+            {
+                Size = new Vector2(Width / 60, (int)(Height / 67.5)),
+            };
             Car1 = new Car(spawnPositions[0], player1CarTexture, config1);
             Car2 = new Car(spawnPositions[1], player2CarTexture, config2);
             _collisionSystem = new CollisionMask(collisionMap);
@@ -57,11 +63,11 @@ namespace RingRaceLab
                 new SpeedBoostPrizeFactory(),
                 new SlowDownPrizeFactory()
             };
-            _prizeManager = new PrizeManager(prizeFactories, _collisionSystem);
+            _prizeManager = new PrizeManager(prizeFactories, _collisionSystem, Width, Height);
             _prizeManager.SpawnPrizes(10);
             
             LoadTextures();
-            _hudRenderer = new HUDRenderer(_textures);
+            _hudRenderer = new HUDRenderer(_textures, Width, Height);
         }
 
         private void LoadTextures()
@@ -177,7 +183,7 @@ namespace RingRaceLab
             {
                 car.lapsComplete++;
                 // Триггерим событие финиша
-                if (car.lapsComplete == 5)
+                if (car.lapsComplete == 0)
                 {
                     OnCarFinished?.Invoke(car);
                 }

@@ -7,7 +7,6 @@ namespace RingRaceApp
     {
         private readonly IMenuController _menuController;
         private readonly IGameController _gameController;
-
         public Form1()
         {
             InitializeComponent();
@@ -22,8 +21,8 @@ namespace RingRaceApp
             DoubleBuffered = true;
 
             // Создаём контроллеры
-            _gameController = new GameController(ShowMenu);
-            _menuController = new MenuController(_gameController, ShowGame);
+            _gameController = new GameController(ShowMenu, Width, Height);
+            _menuController = new MenuController(_gameController, ShowGame, Width, Height);
 
             // Добавляем панели в форму
             Controls.Add(_menuController.MenuPanel);

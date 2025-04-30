@@ -10,10 +10,14 @@ namespace RingRaceLab.Game
     public class HUDRenderer
     {
         private readonly Dictionary<string, int> _textures;
+        private readonly int Width;
+        private readonly int Height;
 
-        public HUDRenderer(Dictionary<string, int> textures)
+        public HUDRenderer(Dictionary<string, int> textures, int Width, int Height)
         {
             _textures = textures;
+            this.Width = Width;
+            this.Height = Height;
         }
 
         public void DrawHUD(Car car1, Car car2)
@@ -22,17 +26,17 @@ namespace RingRaceLab.Game
             int speedLevel1 = GetDecoratorLevel(car1, true);
             int slowLevel1 = GetDecoratorLevel(car1, false);
 
-            DrawIndicator(new Rectangle(5, 5, 160, 40), $"fuel{fuelLevel1}");
-            DrawIndicator(new Rectangle(5, 50, 160, 40), $"speed{speedLevel1}");
-            DrawIndicator(new Rectangle(5, 95, 160, 40), $"slow{slowLevel1}");
+            DrawIndicator(new Rectangle(Width/384, Height/216, Width/12, Height/27), $"fuel{fuelLevel1}");
+            DrawIndicator(new Rectangle(Width / 384, (int)(Height/21.6), Width/12, Height / 27), $"speed{speedLevel1}");
+            DrawIndicator(new Rectangle(Width / 384, (int)(Height / 11.36), Width/12, Height / 27), $"slow{slowLevel1}");
 
             int fuelLevel2 = GetFuelLevel(car2.Fuel);
             int speedLevel2 = GetDecoratorLevel(car2, true);
             int slowLevel2 = GetDecoratorLevel(car2, false);
 
-            DrawIndicator(new Rectangle(1920 - 165, 5, 160, 40), $"fuel{fuelLevel2}");
-            DrawIndicator(new Rectangle(1920 - 165, 50, 160, 40), $"speed{speedLevel2}");
-            DrawIndicator(new Rectangle(1920 - 165, 95, 160, 40), $"slow{slowLevel2}");
+            DrawIndicator(new Rectangle(Width - (int)(Width / 11.63), Height / 216, Width / 12, Height / 27), $"fuel{fuelLevel2}");
+            DrawIndicator(new Rectangle(Width - (int)(Width / 11.63), (int)(Height / 21.6), Width / 12, Height / 27), $"speed{speedLevel2}");
+            DrawIndicator(new Rectangle(Width - (int)(Width / 11.63), (int)(Height / 11.36), Width / 12, Height / 27), $"slow{slowLevel2}");
         }
 
         private int GetFuelLevel(float fuel)

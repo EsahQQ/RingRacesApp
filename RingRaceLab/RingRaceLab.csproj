@@ -63,6 +63,7 @@
     <Compile Include="Game\TextureCache.cs" />
     <Compile Include="Menu\GameBuilder.cs" />
     <Compile Include="Prize\FuelPrize.cs" />
+    <Compile Include="Prize\FuelPrizeFactory.cs" />
     <Compile Include="Prize\IPrize.cs" />
     <Compile Include="Menu\GameConstants.cs" />
     <Compile Include="Menu\GameController.cs" />
@@ -73,8 +74,10 @@
     <Compile Include="Prize\PrizeFactory.cs" />
     <Compile Include="Prize\SlowDownDecorator.cs" />
     <Compile Include="Prize\SlowDownPrize.cs" />
+    <Compile Include="Prize\SlowDownPrizeFactory.cs" />
     <Compile Include="Prize\SpeedBoostDecorator.cs" />
     <Compile Include="Prize\SpeedBoostPrize.cs" />
+    <Compile Include="Prize\SpeedBoostPrizeFactory.cs" />
     <Compile Include="Track\CollisionMask.cs" />
     <Compile Include="Track\FinishLine.cs" />
     <Compile Include="Game\GameEntity.cs" />

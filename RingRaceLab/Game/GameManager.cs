@@ -10,6 +10,7 @@ using System.Timers;
 using System.Threading;
 using System.Drawing;
 using RingRaceLab.Game;
+using RingRaceLab.Prize;
 
 namespace RingRaceLab
 {

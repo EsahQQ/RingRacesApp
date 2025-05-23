@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingRaceApp", "RingRaceApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingRaceLab", "..\RingRaceLab\RingRaceLab.csproj", "{42572A2B-BF4E-4B21-928F-A9A176273C77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "..\UnitTestProject\UnitTestProject.csproj", "{588B8299-6058-4A56-9794-701A1701CBE4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingRaceTestProject", "..\UnitTestProject\RingRaceTestProject.csproj", "{588B8299-6058-4A56-9794-701A1701CBE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

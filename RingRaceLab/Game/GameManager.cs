@@ -13,30 +13,86 @@ using RingRaceLab.Game;
 
 namespace RingRaceLab
 {
+    /// <summary>
+    /// Управляет основным игровым циклом, сущностями, столкновениями, призами и отображением HUD.
+    /// </summary>
     public class GameManager
     {
+        /// <summary>
+        /// Менеджер сущностей для хранения и управления всеми игровыми объектами.
+        /// </summary>
         private readonly EntityManager _entityManager = new EntityManager();
+
+        /// <summary>
+        /// Менеджер призов для создания, управления и обработки сбора призов.
+        /// </summary>
         private readonly PrizeManager _prizeManager;
+
+        /// <summary>
+        /// Рендерер HUD для отображения информации о состоянии игроков.
+        /// </summary>
         private readonly HUDRenderer _hudRenderer;
+
+        /// <summary>
+        /// Система обнаружения столкновений, основанная на маске коллизий.
+        /// </summary>
         private readonly CollisionMask _collisionSystem;
+
+        /// <summary>
+        /// Менеджер ввода для обработки действий игроков.
+        /// </summary>
         private readonly InputManager _inputManager = new InputManager();
+
+        /// <summary>
+        /// Секундомер для измерения времени между кадрами (для дельта времени).
+        /// </summary>
         private readonly Stopwatch _stopwatch = new Stopwatch();
+
+        /// <summary>
+        /// Делегат для события завершения гонки автомобилем.
+        /// </summary>
+        /// <param name="finishedCar">Автомобиль, завершивший гонку.</param>
         public delegate void CarFinishedHandler(Car finishedCar);
+
+        /// <summary>
+        /// Событие, возникающее при завершении гонки одним из автомобилей.
+        /// </summary>
         public event CarFinishedHandler OnCarFinished;
+
+        /// <summary>
+        /// Игровой трек.
+        /// </summary>
         public Track Track { get; private set; }
+
+        /// <summary>
+        /// Первый автомобиль игрока.
+        /// </summary>
         public Car Car1 { get; private set; }
+
+        /// <summary>
+        /// Второй автомобиль игрока.
+        /// </summary>
         public Car Car2 { get; private set; }
 
-        private int _currentFuelLevel1 = 5;
-        private int _currentSpeedLevel1 = 0;
-        private int _currentSlowLevel1 = 0;
-
-        private int _currentFuelLevel2 = 5;
-        private int _currentSpeedLevel2 = 0;
-        private int _currentSlowLevel2 = 0;
-
+        /// <summary>
+        /// Словарь для хранения загруженных текстур по имени.
+        /// </summary>
         private Dictionary<string, int> _textures = new Dictionary<string, int>();
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="GameManager"/>.
+        /// Создает и настраивает все игровые компоненты: трек, автомобили,
+        /// систему столкновений, менеджеры сущностей и призов, а также HUD.
+        /// </summary>
+        /// <param name="trackTexture">Путь к текстуре трека.</param>
+        /// <param name="collisionMap">Путь к изображению маски коллизий.</param>
+        /// <param name="spawnPositions">Массив стартовых позиций для автомобилей.</param>
+        /// <param name="finishPosition">Позиция финишной линии (начало и конец отрезка).</param>
+        /// <param name="player1CarTexture">Путь к текстуре автомобиля первого игрока.</param>
+        /// <param name="player2CarTexture">Путь к текстуре автомобиля второго игрока.</param>
+        /// <param name="Width">Ширина игрового окна.</param>
+        /// <param name="Height">Высота игрового окна.</param>
+        /// <exception cref="ArgumentException">Выбрасывается, если задано менее двух стартовых позиций.</exception>
         public GameManager(string trackTexture, string collisionMap, Vector2[] spawnPositions, Vector2[] finishPosition, string player1CarTexture, string player2CarTexture, int Width, int Height)
         {
             _stopwatch.Start();
@@ -46,7 +102,7 @@ namespace RingRaceLab
             CarConfig config1 = new CarConfig
             {
                 Size = new Vector2(Width / 60, (int)(Height / 67.5)),
-            }; 
+            };
             CarConfig config2 = new CarConfig
             {
                 Size = new Vector2(Width / 60, (int)(Height / 67.5)),
@@ -65,11 +121,14 @@ namespace RingRaceLab
             };
             _prizeManager = new PrizeManager(prizeFactories, _collisionSystem, Width, Height);
             _prizeManager.SpawnPrizes(10);
-            
+
             LoadTextures();
             _hudRenderer = new HUDRenderer(_textures, Width, Height);
         }
 
+        /// <summary>
+        /// Загружает текстуры, используемые в игре, в словарь.
+        /// </summary>
         private void LoadTextures()
         {
             // Индикаторы
@@ -96,63 +155,16 @@ namespace RingRaceLab
 
         }
 
-        private void UpdateIndicators(Car car, ref int fuel, ref int speed, ref int slow)
-        {
-            if (car.Fuel > 80) fuel = 5;
-            else if (car.Fuel > 60) fuel = 4;
-            else if (car.Fuel > 40) fuel = 3;
-            else if (car.Fuel > 20) fuel = 2;
-            else if (car.Fuel > 0) fuel = 1;
-            else fuel = 0;
-            if (car._currentDecorator != null)
-            {
-                TimeSpan elapsed = DateTime.Now - car._currentDecorator.timerStartTime;
-                int remaining = (int)((car._currentDecorator._timer.Interval - elapsed.TotalMilliseconds) / 1000) + 1;
-
-                if (car._currentDecorator is SpeedBoostDecorator)
-                {
-                    if (remaining == 5)
-                        speed = 5;
-                    else if (remaining == 4)
-                        speed = 4;
-                    else if (remaining == 3)
-                        speed = 3;
-                    else if (remaining == 2)
-                        speed = 2;
-                    else if (remaining == 1)
-                        speed = 1;
-                    else
-                        speed = 0;
-                    slow = 0;
-                }
-                else
-                {
-                    if (remaining == 5)
-                        slow = 5;
-                    else if (remaining == 4)
-                        slow = 4;
-                    else if (remaining == 3)
-                        slow = 3;
-                    else if (remaining == 2)
-                        slow = 2;
-                    else if (remaining == 1)
-                        slow = 1;
-                    else
-                        slow = 0;
-                    speed = 0;
-                }
-            }
-            else
-            {
-                speed = 0;
-                slow = 0;
-            }
-        }
-
+        /// <summary>
+        /// Обновляет состояние игрового мира за один кадр.
+        /// Обрабатывает ввод, обновляет положение автомобилей, проверяет коллизии
+        /// и обновляет состояние индикаторов.
+        /// </summary>
+        /// <param name="glControl">Элемент управления GLControl для запроса перерисовки.</param>
         public void Update(GLControl glControl)
         {
             float deltaTime = (float)_stopwatch.Elapsed.TotalSeconds;
-            _stopwatch.Restart(); 
+            _stopwatch.Restart();
 
             var input1 = _inputManager.GetPlayer1Input();
             var input2 = _inputManager.GetPlayer2Input();
@@ -163,17 +175,20 @@ namespace RingRaceLab
             _prizeManager.CheckPrizeCollisions(Car1);
             _prizeManager.CheckPrizeCollisions(Car2);
 
-            UpdateIndicators(Car1, ref _currentFuelLevel1, ref _currentSpeedLevel1, ref _currentSlowLevel1);
-            UpdateIndicators(Car2, ref _currentFuelLevel2, ref _currentSpeedLevel2, ref _currentSlowLevel2);
             glControl.Invalidate();
         }
 
-        
 
+        /// <summary>
+        /// Обновляет состояние одного автомобиля (движение, вращение, коллизии, финиш).
+        /// </summary>
+        /// <param name="car">Автомобиль для обновления.</param>
+        /// <param name="deltaTime">Время, прошедшее с предыдущего кадра.</param>
+        /// <param name="input">Ввод игрока для данного автомобиля.</param>
         private void UpdateCar(Car car, float deltaTime, (bool forward, bool backward, bool left, bool right) input)
         {
-            Vector2 oldPos = car._movement.Position; 
-            float oldAngle = car._movement.Angle;    
+            Vector2 oldPos = car._movement.Position;
+            float oldAngle = car._movement.Angle;
 
             car.Update(deltaTime, input.forward, input.backward, input.left, input.right);
 
@@ -183,7 +198,7 @@ namespace RingRaceLab
             {
                 car.lapsComplete++;
                 // Триггерим событие финиша
-                if (car.lapsComplete == 0)
+                if (car.lapsComplete == 5)
                 {
                     OnCarFinished?.Invoke(car);
                 }
@@ -201,10 +216,13 @@ namespace RingRaceLab
             }
         }
 
+        /// <summary>
+        /// Выполняет отрисовку всех игровых сущностей и HUD.
+        /// </summary>
         public void Draw()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            foreach (var entity in _entityManager._entities)
+            foreach (var entity in _entityManager.GetEntities())
             {
                 entity.Draw();
             }
@@ -213,15 +231,6 @@ namespace RingRaceLab
 
             _hudRenderer.DrawHUD(Car1, Car2);
 
-        }
-        public void Reset(Vector2[] spawnPositions)
-        {
-            // Переинициализируем машины
-            Car1 = new Car(spawnPositions[0], "sprites/car2.png", new CarConfig());
-            Car2 = new Car(spawnPositions[1], "sprites/car1.png", new CarConfig());
-
-            // Сбросим внутреннее состояние
-            _stopwatch.Restart();
         }
     }
 }

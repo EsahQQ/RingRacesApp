@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnitTestProject
+namespace RingRaceTestProject
 {
     [TestClass]
     public class FinishLineTests
@@ -19,12 +19,12 @@ namespace UnitTestProject
             FinishLine finish = new FinishLine(new Vector2(0, 0), new Vector2(0, 100));
             Vector2 previousPos = new Vector2(-10, 50);
             Vector2 currentPos = new Vector2(10, 50);
-
+            bool isCrossed = false;
             // Act
-            bool crossed = finish.CheckCrossing(previousPos, currentPos);
-
+            int crossed = finish.CheckCrossing(previousPos, currentPos);
+            if (crossed == 1 || crossed == -1)  isCrossed = true;
             // Assert
-            Assert.IsTrue(crossed, "Пересечение финишной линии должно быть обнаружено.");
+            Assert.IsTrue(isCrossed, "Пересечение финишной линии должно быть обнаружено.");
         }
 
         [TestMethod]
@@ -34,12 +34,13 @@ namespace UnitTestProject
             FinishLine finish = new FinishLine(new Vector2(0, 0), new Vector2(0, 100));
             Vector2 previousPos = new Vector2(10, 150);
             Vector2 currentPos = new Vector2(20, 150);
-
+            bool isCrossed = true;
             // Act
-            bool crossed = finish.CheckCrossing(previousPos, currentPos);
+            int crossed = finish.CheckCrossing(previousPos, currentPos);
+            if (crossed == 0) isCrossed = false;
 
             // Assert
-            Assert.IsFalse(crossed, "Пересечение не должно быть обнаружено вне линии.");
+            Assert.IsFalse(isCrossed, "Пересечение не должно быть обнаружено вне линии.");
         }
     }
 }

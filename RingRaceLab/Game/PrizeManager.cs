@@ -5,20 +5,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
+
 namespace RingRaceLab.Game
 {
+    /// <summary>
+    /// Управляет призами на трассе.
+    /// </summary>
     public class PrizeManager
     {
         private readonly List<IPrize> _activePrizes = new List<IPrize>();
         private readonly PrizeFactory[] _prizeFactories;
         private readonly CollisionMask _collisionSystem;
+
+        /// <summary>
+        /// Таймер возрождения призов.
+        /// </summary>
         private readonly System.Timers.Timer _prizeRespawnTimer;
-        private const int MIN_PRIZES = 5;
+
+        private const int MIN_PRIZES = 7;
+
+        /// <summary>
+        /// Максимальное количество призов.
+        /// </summary>
         public const int MAX_PRIZES = 10;
+
         private const int RESPAWN_INTERVAL = 3000;
         private readonly int Width;
         private readonly int Height;
 
+        /// <summary>
+        /// Инициализирует PrizeManager.
+        /// </summary>
+        /// <param name="prizeFactories">Фабрики призов.</param>
+        /// <param name="collisionSystem">Система коллизий.</param>
+        /// <param name="Width">Ширина.</param>
+        /// <param name="Height">Высота.</param>
         public PrizeManager(PrizeFactory[] prizeFactories, CollisionMask collisionSystem, int Width, int Height)
         {
             _prizeFactories = prizeFactories;
@@ -31,6 +52,10 @@ namespace RingRaceLab.Game
             _prizeRespawnTimer.Start();
         }
 
+        /// <summary>
+        /// Создает и размещает призы.
+        /// </summary>
+        /// <param name="count">Количество.</param>
         public void SpawnPrizes(int count)
         {
             Random rand = new Random();
@@ -51,41 +76,49 @@ namespace RingRaceLab.Game
         private bool IsValidPosition(Vector2 position)
         {
             if (!_collisionSystem.IsDrivable((int)position.X, (int)position.Y)) return false;
-            foreach (var prize in _activePrizes)
-            {
-                if (Vector2.Distance(position, prize.Position) < (int)(Width / 38.4)) return false;
-            }
+
+                foreach (var prize in _activePrizes)
+                {
+                    if (Vector2.Distance(position, prize.Position) < (int)(Width / 38.4)) return false;
+                }
+
             return true;
         }
 
+        /// <summary>
+        /// Проверяет столкновения автомобиля с призами.
+        /// </summary>
+        /// <param name="car">Автомобиль.</param>
         public void CheckPrizeCollisions(Car car)
         {
-            lock (_activePrizes)
-            {
+
                 for (int i = _activePrizes.Count - 1; i >= 0; i--)
                 {
-                    if (Vector2.Distance(car._movement.Position, _activePrizes[i].Position) < (int)(Width/38.4))
+                    if (Vector2.Distance(car._movement.Position, _activePrizes[i].Position) < (int)(Width / 38.4))
                     {
                         _activePrizes[i].ApplyEffect(car);
                         _activePrizes.RemoveAt(i);
                     }
                 }
-            }
+
         }
 
         private void RespawnPrizes()
         {
-            if (_activePrizes.Count < MIN_PRIZES)
-            {
-                int needed = MAX_PRIZES - _activePrizes.Count;
-                SpawnPrizes(needed);
-            }
+ 
+                if (_activePrizes.Count < MIN_PRIZES)
+                {
+                    int needed = MAX_PRIZES - _activePrizes.Count;
+                    SpawnPrizes(needed);
+                }
         }
 
+        /// <summary>
+        /// Отрисовывает призы.
+        /// </summary>
         public void DrawPrizes()
         {
-            lock (_activePrizes)
-            {
+
                 foreach (var prize in _activePrizes)
                 {
                     GL.PushMatrix();
@@ -99,7 +132,18 @@ namespace RingRaceLab.Game
                     GL.End();
                     GL.PopMatrix();
                 }
-            }
+
+        }
+
+        /// <summary>
+        /// Сбрасывает состояние.
+        /// </summary>
+        public void Reset()
+        {
+            _prizeRespawnTimer.Stop();
+
+                _activePrizes.Clear();
+
         }
     }
 }

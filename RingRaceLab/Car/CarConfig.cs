@@ -2,6 +2,9 @@
 
 namespace RingRaceLab
 {
+    /// <summary>
+    /// Конфигурация параметров автомобиля.
+    /// </summary>
     public class CarConfig
     {
         public float ForwardAcceleration { get; set; } = 150f;

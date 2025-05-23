@@ -9,15 +9,34 @@ using System.Windows.Forms;
 
 namespace RingRaceLab.Menu
 {
+    /// <summary>
+    /// Строитель игрового интерфейса, в частности панели завершения игры.
+    /// </summary>
     public class GameBuilder
     {
+        /// <summary>
+        /// Панель игры.
+        /// </summary>
         private readonly Panel GamePanel;
+
+        /// <summary>
+        /// Флаг состояния.
+        /// </summary>
         public bool flag = false;
+
         private readonly Action _exitToMenu;
         private PictureBox player;
         private FlowLayoutPanel GameFinishedPanel;
         private readonly int Width;
         private readonly int Height;
+
+        /// <summary>
+        /// Инициализирует GameBuilder.
+        /// </summary>
+        /// <param name="GamePanel">Панель игры.</param>
+        /// <param name="exitToMenu">Действие для выхода в меню.</param>
+        /// <param name="Width">Ширина.</param>
+        /// <param name="Height">Высота.</param>
         public GameBuilder(Panel GamePanel, Action exitToMenu, int Width, int Height)
         {
             this.GamePanel = GamePanel;
@@ -25,6 +44,10 @@ namespace RingRaceLab.Menu
             this.Width = Width;
             this.Height = Height;
         }
+
+        /// <summary>
+        /// Строит интерфейс завершения игры.
+        /// </summary>
         public void Build()
         {
 
@@ -32,15 +55,15 @@ namespace RingRaceLab.Menu
             {
                 FlowDirection = FlowDirection.TopDown,
                 Visible = false,
-                Width = (int)(this.Width/3.84),
-                Height = (int)(this.Height/2.16),
-                Location = new Point(Width / 2 - (int)(Width/7.68), Height / 2 - (int)(Height/4.32)),
+                Width = (int)(this.Width / 3.84),
+                Height = (int)(this.Height / 2.16),
+                Location = new Point(Width / 2 - (int)(Width / 7.68), Height / 2 - (int)(Height / 4.32)),
                 BackgroundImage = Image.FromFile("sprites/EndGamePanel.png"),
             };
             player = new PictureBox
             {
-                Height = (int)(Height/10.8),
-                Width = (int)(Width/3.88),
+                Height = (int)(Height / 10.8),
+                Width = (int)(Width / 3.88),
                 BackColor = Color.Transparent,
                 SizeMode = PictureBoxSizeMode.CenterImage,
             };
@@ -54,10 +77,10 @@ namespace RingRaceLab.Menu
             };
             Button ExitToMenuButton = new Button
             {
-                Width = (int)(Width/6.87),
-                Height = (int)(Height/8.3),
+                Width = (int)(Width / 6.87),
+                Height = (int)(Height / 8.3),
                 FlatStyle = FlatStyle.Flat,
-                Margin = new Padding((int)(Width/17.45), Height/18, 0, 0),
+                Margin = new Padding((int)(Width / 17.45), Height / 18, 0, 0),
                 BackgroundImageLayout = ImageLayout.Stretch,
                 BackgroundImage = Image.FromFile("sprites/ExitToMenuButton.png"),
                 BackColor = Color.Transparent
@@ -78,10 +101,19 @@ namespace RingRaceLab.Menu
             flag = false;
             GameFinishedPanel.Visible = false;
         }
+
+        /// <summary>
+        /// Устанавливает изображение победителя.
+        /// </summary>
+        /// <param name="image">Изображение победителя.</param>
         public void SetWinner(Image image)
         {
             player.Image = image;
         }
+
+        /// <summary>
+        /// Показывает панель завершения игры.
+        /// </summary>
         public void ShowFinishedPanel()
         {
             GameFinishedPanel.Visible = true;

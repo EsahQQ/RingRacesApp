@@ -12,14 +12,47 @@ using RingRaceLab.Menu;
 
 namespace RingRaceLab
 {
+    /// <summary>
+    /// Контроллер игры.
+    /// </summary>
     public class GameController : IGameController
     {
+        /// <summary>
+        /// Панель игры.
+        /// </summary>
         public Panel GamePanel { get; }
+
+        /// <summary>
+        /// Действие выхода в меню.
+        /// </summary>
         public readonly Action _exitToMenu;
+
+        /// <summary>
+        /// Менеджер игры.
+        /// </summary>
         private GameManager _gameManager;
+
+        /// <summary>
+        /// Элемент управления OpenGL.
+        /// </summary>
         private GLControl _glControl;
+
+        /// <summary>
+        /// PictureBox игрока.
+        /// </summary>
         public PictureBox player;
+
+        /// <summary>
+        /// Строитель UI игры.
+        /// </summary>
         private readonly GameBuilder gameBuilder;
+
+        /// <summary>
+        /// Инициализирует контроллер.
+        /// </summary>
+        /// <param name="exitToMenu">Действие выхода в меню.</param>
+        /// <param name="Width">Ширина.</param>
+        /// <param name="Height">Высота.</param>
         public GameController(Action exitToMenu, int Width, int Height)
         {
             GamePanel = new Panel
@@ -58,7 +91,7 @@ namespace RingRaceLab
                     _gameManager?.Update(_glControl);
                     _gameManager?.Draw();
                 }
-                
+
                 _glControl.SwapBuffers();
             };
 
@@ -78,6 +111,12 @@ namespace RingRaceLab
             GL.LoadIdentity();
         }
 
+        /// <summary>
+        /// Запускает игру.
+        /// </summary>
+        /// <param name="track">Имя трека.</param>
+        /// <param name="player1Car">Текстура машины игрока 1.</param>
+        /// <param name="player2Car">Текстура машины игрока 2.</param>
         public void StartGame(string track, string player1Car, string player2Car)
         {
             GamePanel.Show();
@@ -100,7 +139,9 @@ namespace RingRaceLab
             }
         }
 
-
+        /// <summary>
+        /// Скрывает игру.
+        /// </summary>
         public void HideGame() => GamePanel.Hide();
 
         private void OnCarFinished(Car car)

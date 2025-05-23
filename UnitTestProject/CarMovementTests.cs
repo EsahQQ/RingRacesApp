@@ -2,7 +2,7 @@
 using OpenTK;
 using RingRaceLab;
 
-namespace UnitTestProject
+namespace RingRaceTestProject
 {
     [TestClass]
     public class CarMovementTests

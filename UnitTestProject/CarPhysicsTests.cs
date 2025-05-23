@@ -3,7 +3,7 @@ using OpenTK;
 using RingRaceLab;
 using System.Collections.Generic;
 
-namespace UnitTestProject
+namespace RingRaceTestProject
 {
     [TestClass]
     public class CarPhysicsTests

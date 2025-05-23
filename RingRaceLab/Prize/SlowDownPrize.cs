@@ -5,11 +5,25 @@ using RingRaceLab.Game;
 
 namespace RingRaceLab
 {
+    /// <summary>
+    /// Приз, применяющий эффект замедления к автомобилю.
+    /// </summary>
     public class SlowDownPrize : IPrize
     {
+        /// <summary>
+        /// Позиция приза.
+        /// </summary>
         public Vector2 Position { get; set; }
+
+        /// <summary>
+        /// ID текстуры приза.
+        /// </summary>
         public int TextureId { get; }
 
+        /// <summary>
+        /// Инициализирует приз замедления.
+        /// </summary>
+        /// <param name="position">Позиция приза.</param>
         public SlowDownPrize(Vector2 position)
         {
             Position = position;
@@ -24,6 +38,10 @@ namespace RingRaceLab
             }
         }
 
+        /// <summary>
+        /// Применяет эффект замедления к машине.
+        /// </summary>
+        /// <param name="car">Машина, к которой применяется эффект.</param>
         public void ApplyEffect(Car car)
         {
             car.ApplyDecorator(new SlowDownDecorator(car, 0.5f, 5f));

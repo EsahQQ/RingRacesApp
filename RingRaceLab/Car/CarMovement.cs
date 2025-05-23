@@ -3,20 +3,50 @@ using System;
 
 namespace RingRaceLab
 {
+    /// <summary>
+    /// Управляет движением и ориентацией автомобиля.
+    /// </summary>
     public class CarMovement
     {
+        /// <summary>
+        /// Текущая позиция автомобиля.
+        /// </summary>
         public Vector2 Position { get; set; }
-        public float Angle { get;  set; }
+
+        /// <summary>
+        /// Текущий угол ориентации автомобиля (в градусах).
+        /// </summary>
+        public float Angle { get; set; }
+
+        /// <summary>
+        /// Текущая скорость автомобиля.
+        /// </summary>
         public float CurrentSpeed { get; set; }
 
-        public CarConfig _config;
+        /// <summary>
+        /// Конфигурация параметров движения автомобиля.
+        /// </summary>
+        public CarConfig _config; // Убрал internal, так как используется из Car
 
+        /// <summary>
+        /// Инициализирует управление движением автомобиля.
+        /// </summary>
+        /// <param name="startPosition">Начальная позиция.</param>
+        /// <param name="config">Конфигурация движения.</param>
         public CarMovement(Vector2 startPosition, CarConfig config)
         {
             Position = startPosition;
             _config = config;
         }
 
+        /// <summary>
+        /// Обновляет позицию, угол и скорость автомобиля.
+        /// </summary>
+        /// <param name="deltaTime">Время, прошедшее с последнего обновления.</param>
+        /// <param name="moveForward">Флаг движения вперед.</param>
+        /// <param name="moveBackward">Флаг движения назад.</param>
+        /// <param name="turnLeft">Флаг поворота влево.</param>
+        /// <param name="turnRight">Флаг поворота вправо.</param>
         public void Update(float deltaTime, bool moveForward, bool moveBackward, bool turnLeft, bool turnRight)
         {
             // Переносим всю логику движения из старого класса Car
@@ -56,7 +86,6 @@ namespace RingRaceLab
         }
 
 
-
         private void ApplyDeceleration(float deltaTime)
         {
             if (CurrentSpeed > 0)
@@ -75,7 +104,7 @@ namespace RingRaceLab
             {
                 float speedFactor = Math.Max(
                     (_config.ForwardMaxSpeed - Math.Abs(CurrentSpeed)) / _config.ForwardMaxSpeed,
-                    0.8f
+                    0.6f
                 );
 
                 float effectiveTurnSpeed = _config.TurnSpeed * speedFactor;

@@ -12,8 +12,17 @@ using OpenTK.Graphics.OpenGL;
 
 namespace RingRaceLab
 {
+    /// <summary>
+    /// Загрузчик текстур для OpenGL.
+    /// </summary>
     public static class TextureLoader
     {
+        /// <summary>
+        /// Загружает текстуру из файла.
+        /// </summary>
+        /// <param name="path">Путь к файлу текстуры.</param>
+        /// <returns>Идентификатор текстуры OpenGL.</returns>
+        /// <exception cref="FileNotFoundException">Файл текстуры не найден.</exception>
         public static int LoadFromFile(string path)
         {
             if (!File.Exists(path))
